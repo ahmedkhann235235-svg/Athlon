@@ -1,0 +1,95 @@
+<section class="max-w-5xl mx-auto grid gap-4">
+  <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+    <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">System settings</p>
+    <h2 class="mt-2 text-3xl font-black tracking-tight">Profile & System</h2>
+    <p class="mt-2 text-sm text-[var(--muted)]">Quiet luxury controls for theme, data reset, and the app tribute.</p>
+
+    <div class="mt-5 grid gap-4 lg:grid-cols-2">
+      <label class="grid gap-2">
+        <span class="text-xs text-[var(--muted)]">Theme selector</span>
+        <select id="themeSelect" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] px-4 outline-none">
+          <option value="light">Light Mode</option>
+          <option value="dark">OLED Dark Mode</option>
+        </select>
+      </label>
+
+      <button id="toggleThemeBtn" type="button" class="min-h-[56px] rounded-2xl bg-[var(--accent)] px-4 font-extrabold text-white">
+        Toggle Theme
+      </button>
+    </div>
+  </div>
+
+  <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+    <h3 class="text-lg font-bold tracking-tight">About App</h3>
+    <div class="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+      <p class="text-sm font-semibold">Developed by Md Ahmed Khan, a classmate student</p>
+    </div>
+
+    <div class="mt-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+      <p class="text-sm font-bold italic leading-7">
+        "Consistency beats intensity. True health is built day-by-day."
+      </p>
+    </div>
+  </div>
+
+  <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+    <h3 class="text-lg font-bold tracking-tight">Database reset</h3>
+    <p class="mt-1 text-sm text-[var(--muted)]">This clears local IndexedDB stores and restarts onboarding.</p>
+    <button id="resetDbBtn" type="button" class="mt-4 min-h-[56px] rounded-2xl bg-[var(--red)] px-4 font-extrabold text-white">
+      Reset Local Database
+    </button>
+  </div>
+</section>
+
+<script>
+(() => {
+  const themeSelect = document.getElementById("themeSelect");
+  const toggleThemeBtn = document.getElementById("toggleThemeBtn");
+  const resetDbBtn = document.getElementById("resetDbBtn");
+  const session = window.userSession || (window.userSession = {});
+
+  function syncTheme() {
+    const theme = session.theme || localStorage.getItem("hpos_theme") || "dark";
+    themeSelect.value = theme;
+  }
+
+  themeSelect.addEventListener("change", () => {
+    window.router?.setTheme(themeSelect.value);
+    session.theme = themeSelect.value;
+    localStorage.setItem("hpos_session", JSON.stringify(session));
+  });
+
+  toggleThemeBtn.addEventListener("click", () => {
+    const next = (session.theme || localStorage.getItem("hpos_theme") || "dark") === "dark" ? "light" : "dark";
+    window.router?.setTheme(next);
+    session.theme = next;
+    localStorage.setItem("hpos_session", JSON.stringify(session));
+    syncTheme();
+  });
+
+  resetDbBtn.addEventListener("click", async () => {
+    if (!confirm("Reset all local data and restart onboarding?")) return;
+
+    await window.db.ready;
+    await window.db.clearAll();
+
+    localStorage.removeItem("hpos_theme");
+    localStorage.removeItem("hpos_session");
+
+    session.authenticated = false;
+    session.profile = null;
+    session.rttScore = 0;
+    session.dailyCalories = 0;
+    localStorage.setItem("hpos_session", JSON.stringify(session));
+
+    window.HPOSHaptics?.success();
+    await window.router.navigate("auth", { replace: true, skipHistory: true });
+  });
+
+  syncTheme();
+
+  window.addEventListener("hpos:view-mounted", (event) => {
+    if (event.detail?.route === "settings") syncTheme();
+  });
+})();
+</script>
