@@ -1,15 +1,15 @@
 <!doctype html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
-  <link rel="stylesheet" href="style.css">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Athlon</title>
+  <title>Human Performance OS</title>
   <meta name="color-scheme" content="light dark" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
   <style>
     :root{
       --bg:#F9FAFB;
@@ -35,6 +35,258 @@
       --surface:#121824;
       --surface-2:#171E2B;
       --border:rgba(249,250,251,.09);
+      --text:#F9FAFB;
+      --muted:#9CA3AF;
+      --accent:#A78BFA;
+      --accent-2:#C4B5FD;
+      --shadow:0 10px 34px rgba(0,0,0,.28);
+    }
+
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+      transition:background var(--speed), color var(--speed);
+      overflow-x:hidden;
+    }
+
+    *{box-sizing:border-box}
+    button,a,input,select,textarea{font:inherit}
+    button{
+      border:0;
+      background:none;
+      color:inherit;
+      cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    .shell{min-height:100dvh}
+    .desktop-sidebar{
+      position:fixed;
+      top:0; left:0; bottom:0;
+      width:var(--sidebar-w);
+      padding:24px 18px;
+      border-right:1px solid var(--border);
+      background:color-mix(in srgb, var(--bg) 90%, transparent);
+      backdrop-filter:blur(16px);
+      display:none;
+      z-index:20;
+    }
+
+    .sidebar-brand{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      margin-bottom:24px;
+    }
+    .sidebar-brand h1{
+      margin:0;
+      font-size:20px;
+      line-height:1;
+      letter-spacing:-.03em;
+    }
+    .sidebar-brand p{
+      margin:0;
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .sidebar-nav{display:grid; gap:10px;}
+    .nav-btn{
+      min-height:56px;
+      border-radius:16px;
+      padding:0 14px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      background:transparent;
+      border:1px solid transparent;
+      color:var(--muted);
+      font-weight:700;
+      transition:transform var(--speed), background var(--speed), color var(--speed), border-color var(--speed), box-shadow var(--speed);
+    }
+    .nav-btn:hover{transform:translateY(-1px)}
+    .nav-btn.is-active{
+      color:var(--accent);
+      background:var(--surface);
+      border-color:color-mix(in srgb, var(--accent) 20%, transparent);
+      box-shadow:var(--shadow);
+    }
+    .nav-icon{
+      width:24px;
+      display:grid;
+      place-items:center;
+      font-size:16px;
+      flex:0 0 auto;
+    }
+    .sidebar-footer{margin-top:auto; display:grid; gap:10px;}
+    .toggle-btn{
+      min-height:56px;
+      border-radius:16px;
+      padding:0 14px;
+      background:var(--surface);
+      border:1px solid var(--border);
+      font-weight:800;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      transition:transform var(--speed), background var(--speed), border-color var(--speed);
+    }
+    .toggle-btn:hover{transform:translateY(-1px)}
+
+    .main-wrap{
+      min-height:100dvh;
+      padding-bottom:calc(var(--nav-h) + env(safe-area-inset-bottom));
+    }
+
+    .content-shell{
+      width:100%;
+      max-width:1280px;
+      margin:0 auto;
+      padding:16px;
+    }
+
+    #app-canvas{
+      min-height:calc(100dvh - 32px - var(--nav-h));
+    }
+
+    .mobile-nav{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      z-index:30;
+      padding:10px 10px calc(10px + env(safe-area-inset-bottom));
+      border-top:1px solid var(--border);
+      background:color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter:blur(16px);
+      display:grid;
+      grid-template-columns:repeat(5, 1fr);
+      gap:8px;
+    }
+
+    .mobile-nav .nav-btn{
+      flex-direction:column;
+      justify-content:center;
+      gap:4px;
+      font-size:10px;
+      padding:8px 6px;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      bottom:calc(var(--nav-h) + 18px);
+      transform:translateX(-50%) translateY(8px);
+      opacity:0;
+      pointer-events:none;
+      transition:opacity var(--speed), transform var(--speed);
+      min-height:48px;
+      padding:0 14px;
+      border-radius:999px;
+      background:var(--surface);
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      display:inline-flex;
+      align-items:center;
+      z-index:50;
+      white-space:nowrap;
+    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    @media (min-width: 1024px){
+      .desktop-sidebar{
+        display:flex;
+        flex-direction:column;
+      }
+      .main-wrap{
+        padding-left:var(--sidebar-w);
+        padding-bottom:0;
+      }
+      .content-shell{padding:24px}
+      .mobile-nav{display:none}
+      #app-canvas{min-height:calc(100dvh - 48px)}
+    }
+  </style>
+
+  <script>
+    document.documentElement.setAttribute("data-theme", localStorage.getItem("hpos_theme") || "dark");
+  </script>
+
+  <script src="db.js" defer></script>
+  <script src="router.js" defer></script>
+</head>
+<body>
+  <div class="shell">
+    <aside class="desktop-sidebar">
+      <div class="sidebar-brand">
+        <h1>Human Performance OS</h1>
+        <p>Quiet luxury fitness website</p>
+      </div>
+
+      <nav class="sidebar-nav" aria-label="Primary">
+        <button class="nav-btn" data-route="dashboard" type="button"><span class="nav-icon">⌂</span><span>Dashboard</span></button>
+        <button class="nav-btn" data-route="workout" type="button"><span class="nav-icon">◎</span><span>Workout</span></button>
+        <button class="nav-btn" data-route="chatbot" type="button"><span class="nav-icon">◉</span><span>AI Chatbot</span></button>
+        <button class="nav-btn" data-route="settings" type="button"><span class="nav-icon">◫</span><span>Profile</span></button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="toggle-btn" data-action="toggle-theme" type="button">
+          <span>Theme Toggle</span><span>◌</span>
+        </button>
+      </div>
+    </aside>
+
+    <div class="main-wrap">
+      <div class="content-shell">
+        <main id="app-canvas" aria-live="polite"></main>
+      </div>
+    </div>
+
+    <nav class="mobile-nav" aria-label="Mobile primary">
+      <button class="nav-btn" data-route="dashboard" type="button"><span class="nav-icon">⌂</span><span>Dashboard</span></button>
+      <button class="nav-btn" data-route="workout" type="button"><span class="nav-icon">◎</span><span>Workout</span></button>
+      <button class="nav-btn" data-route="chatbot" type="button"><span class="nav-icon">◉</span><span>AI Chatbot</span></button>
+      <button class="nav-btn" data-route="settings" type="button"><span class="nav-icon">◫</span><span>Profile</span></button>
+      <button class="nav-btn" data-action="toggle-theme" type="button"><span class="nav-icon">◌</span><span>Theme</span></button>
+    </nav>
+  </div>
+
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <script>
+    window.hposToast = function (message) {
+      const el = document.getElementById("toast");
+      if (!el) return;
+      el.textContent = message;
+      el.classList.add("show");
+      clearTimeout(window.__hposToastTimer);
+      window.__hposToastTimer = setTimeout(() => el.classList.remove("show"), 1500);
+    };
+
+    (async () => {
+      await window.db.ready;
+      const profile = await window.db.get("userProfiles", "current");
+      const session = window.userSession || {};
+      if (profile) {
+        session.profile = profile;
+        session.authenticated = true;
+      } else {
+        session.authenticated = false;
+      }
+      window.userSession = session;
+      window.saveUserSession?.();
+
+      if (window.router?.init) {
+        await window.router.init();
+      }
+    })();
+  </script>
+</body>
+</html>      --border:rgba(249,250,251,.09);
       --text:#F9FAFB;
       --muted:#9CA3AF;
       --accent:#A78BFA;
