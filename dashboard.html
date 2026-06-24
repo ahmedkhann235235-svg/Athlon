@@ -1,40 +1,19 @@
-<section class="max-w-7xl mx-auto grid gap-4">
-  <div class="grid gap-4 xl:grid-cols-[1.15fr_.85fr]">
-    <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
-      <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Telemetry dashboard</p>
-      <div class="mt-2 flex items-end justify-between gap-4 flex-wrap">
-        <div>
-          <h2 class="text-3xl font-black tracking-tight">Human Performance OS</h2>
-          <p class="mt-2 text-sm text-[var(--muted)]">BMR, calories, recovery, and Indian nutrition logging update in real time.</p>
-        </div>
-        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 min-w-[190px]">
-          <p class="text-xs text-[var(--muted)]">Active goal</p>
-          <p id="activeGoalText" class="mt-1 text-sm font-bold">—</p>
-        </div>
-      </div>
+<h1>Dashboard</h1>
 
-      <div class="mt-5 grid gap-4 lg:grid-cols-4">
-        <label class="grid gap-2">
-          <span class="text-xs text-[var(--muted)]">Activity multiplier</span>
-          <select id="ActivityMultiplier" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none">
-            <option value="1.2">Sedentary (1.2)</option>
-            <option value="1.375">Light (1.375)</option>
-            <option value="1.55" selected>Moderate (1.55)</option>
-            <option value="1.725">Active (1.725)</option>
-          </select>
-        </label>
+<div>
+  <label>HRV</label>
+  <input id="hrv" type="number" value="60">
 
-        <label class="grid gap-2">
-          <span class="text-xs text-[var(--muted)]">HRV</span>
-          <input id="HRV" type="number" min="1" step="0.1" value="62" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" />
-        </label>
+  <label>Sleep</label>
+  <input id="sleep" type="number" value="7">
 
-        <label class="grid gap-2">
-          <span class="text-xs text-[var(--muted)]">Sleep (hours)</span>
-          <input id="SleepHours" type="number" min="0" step="0.1" value="8" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" />
-        </label>
+  <label>RHR</label>
+  <input id="rhr" type="number" value="60">
+</div>
 
-        <label class="grid gap-2">
+<h2>RTT Score: <span id="rtt">0</span></h2>
+
+<button id="rttBtn" style="display:none"></button> <!-- FIXED: rttBtn anchor expected by app.js -->        <label class="grid gap-2">
           <span class="text-xs text-[var(--muted)]">RHR</span>
           <input id="RHR" type="number" min="20" step="1" value="60" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" />
         </label>
