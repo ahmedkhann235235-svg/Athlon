@@ -1,40 +1,55 @@
-<div style="padding:20px">
-  <h1>Login</h1>
+<section style="padding:20px; max-width:480px; margin:0 auto;">
+  <h1>Welcome</h1>
+  <p style="color:var(--muted); margin-bottom:20px;">Sign in or create your account</p>
 
-  <input id="email" placeholder="email" style="display:block;margin:10px 0;padding:10px">
-  <input id="pass" type="password" placeholder="password" style="display:block;margin:10px 0;padding:10px">
+  <input id="email" type="email" placeholder="Email">
+  <input id="pass" type="password" placeholder="Password">
 
-  <button onclick="login()" style="padding:12px;background:#A78BFA;color:white;width:100%">
-    Login
-  </button>
+  <button onclick="handleLogin()" style="width:100%; margin-bottom:10px;">Login</button>
+  <button onclick="handleSignup()" style="width:100%; background:transparent; border:1px solid var(--accent);">Sign Up</button>
 
-  <button onclick="signup()" style="padding:12px;margin-top:10px;width:100%">
-    Signup
-  </button>
-</div>
+  <p id="authStatus" style="color:var(--muted); margin-top:10px;"></p>
+</section>
 
-<script type="module">
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword }
-from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-
-const auth = window.auth;
-
-window.login = async () => {
+<script>
+async function handleLogin() {
   const email = document.getElementById("email").value;
   const pass = document.getElementById("pass").value;
+  const status = document.getElementById("authStatus");
 
-  await signInWithEmailAndPassword(auth, email, pass);
+  if (!email || !pass) { status.innerText = "Fill in all fields."; return; }
 
-  window.userSession.authenticated = true;
-  router.navigate("dashboard");
-};
+  status.innerText = "Logging in...";
+  try {
+    await signInWithEmailAndPassword(window.auth, email, pass);
+    window.userSession = window.userSession || {};
+    window.userSession.authenticated = true;
+    window.saveUserSession?.();
+    router.navigate("dashboard");
+  } catch (e) {
+    status.innerText = e.message;
+  }
+}
 
-window.signup = async () => {
+async function handleSignup() {
   const email = document.getElementById("email").value;
   const pass = document.getElementById("pass").value;
+  const status = document.getElementById("authStatus");
 
-  await createUserWithEmailAndPassword(auth, email, pass);
+  if (!email || !pass) { status.innerText = "Fill in all fields."; return; }
 
+  status.innerText = "Creating account...";
+  try {
+    await createUserWithEmailAndPassword(window.auth, email, pass);
+    window.userSession = window.userSession || {};
+    window.userSession.authenticated = true;
+    window.saveUserSession?.();
+    router.navigate("dashboard");
+  } catch (e) {
+    status.innerText = e.message;
+  }
+}
+</script>
   window.userSession.authenticated = true;
   router.navigate("dashboard");
 };
