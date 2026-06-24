@@ -23,9 +23,9 @@ body{
   color:var(--text);
 }
 
-#app-canvas{
-  min-height:100vh;
+#app{
   padding:16px;
+  min-height:100vh;
 }
 
 .nav{
@@ -35,6 +35,32 @@ body{
   background:var(--card);
   display:flex;
   justify-content:space-around;
+  padding:12px;
+}
+button{
+  background:none;
+  border:none;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">Loading...</div>
+
+<div class="nav">
+  <button onclick="router.go('dashboard')">Dashboard</button>
+  <button onclick="router.go('workout')">Workout</button>
+  <button onclick="router.go('chatbot')">AI</button>
+  <button onclick="router.go('settings')">Settings</button>
+</div>
+
+<script src="router.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>  justify-content:space-around;
   padding:12px;
 }
 button{
