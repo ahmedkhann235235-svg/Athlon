@@ -1,40 +1,800 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="en" data-theme="light">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Athlon</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Athlon</title>
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    :root {
+      --bg: #F9FAFB;
+      --surface: #FFFFFF;
+      --surface-2: #F3F4F6;
+      --border: rgba(17, 24, 39, 0.08);
+      --text: #111827;
+      --muted: #4B5563;
+      --accent: #7C3AED;
+      --accent-2: #A78BFA;
+      --green: #34D399;
+      --amber: #FBBF24;
+      --red: #F87171;
+      --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+      --radius: 18px;
+      --speed: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+      --nav-h: 74px;
+      --max: 1080px;
+    }
 
+    html[data-theme="dark"] {
+      --bg: #0A0D14;
+      --surface: #121824;
+      --surface-2: #171E2B;
+      --border: rgba(249, 250, 251, 0.09);
+      --text: #F9FAFB;
+      --muted: #9CA3AF;
+      --accent: #A78BFA;
+      --accent-2: #C4B5FD;
+      --shadow: 0 10px 34px rgba(0, 0, 0, 0.28);
+    }
 
-<script>
-/* =========================
-   ATHLON STATE ENGINE (UPGRADED)
-========================= */
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      transition: background var(--speed), color var(--speed);
+    }
 
-const state = {
-  energy: 70,
-  fatigue: 30,
-  sleep: 7,
-  readiness: 0,
-  sets: []
-};
+    button, input, select, textarea {
+      font: inherit;
+    }
 
-/* Load saved */
-const saved = localStorage.getItem("athlon_state");
-if (saved) Object.assign(state, JSON.parse(saved));
+    button {
+      border: 0;
+      background: none;
+      color: inherit;
+      padding: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
 
-function save() {
-  localStorage.setItem("athlon_state", JSON.stringify(state));
-}
+    .app {
+      max-width: var(--max);
+      min-height: 100dvh;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom));
+    }
 
-/* =========================
-   READINESS ENGINE
-========================= */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 16px;
+    }
 
-function calculateReadiness() {
-  const sleepFactor = (state.sleep / 8) * 40;
-  const energyFactor = state.energy * 0.4;
-  const fatiguePenalty = state.fatigue * 0.6;
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .brand p {
+      margin: 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .header-metrics {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill {
+      min-height: 40px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: none;
+      transition: transform var(--speed), background var(--speed), border-color var(--speed), color var(--speed);
+    }
+
+    .pill:hover { transform: translateY(-1px); }
+
+    .pill-ghost {
+      background: transparent;
+    }
+
+    .nav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 40;
+      padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+      border-top: 1px solid var(--border);
+      background: color-mix(in srgb, var(--bg) 92%, transparent);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav-inner {
+      max-width: var(--max);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+
+    .nav-btn {
+      min-height: 56px;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 11px;
+      line-height: 1;
+      padding: 8px 6px;
+      transition: background var(--speed), color var(--speed), border-color var(--speed), transform var(--speed);
+    }
+
+    .nav-btn .icon {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .nav-btn:hover { transform: translateY(-1px); }
+
+    .nav-btn.active {
+      color: var(--accent);
+      background: var(--surface);
+      border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+      box-shadow: var(--shadow);
+    }
+
+    .main {
+      flex: 1;
+      padding: 16px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .panel {
+      display: none;
+      animation: slideIn var(--speed) both;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .card-pad {
+      padding: 16px;
+    }
+
+    .section-title {
+      margin: 0 0 6px;
+      font-size: 18px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .section-subtitle {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .hero {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: 1.2fr 0.8fr;
+    }
+
+    .hero-main {
+      padding: 18px;
+      border-radius: calc(var(--radius) + 2px);
+      background:
+        radial-gradient(circle at top right, color-mix(in srgb, var(--accent) 16%, transparent), transparent 34%),
+        var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .big-score {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .big-score .value {
+      font-size: 54px;
+      line-height: 0.95;
+      font-weight: 800;
+      letter-spacing: -0.05em;
+    }
+
+    .status {
+      min-height: 30px;
+      padding: 0 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 12px;
+      border: 1px solid transparent;
+    }
+
+    .grid-3,
+    .grid-2 {
+      display: grid;
+      gap: 12px;
+    }
+
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+
+    .stat {
+      padding: 14px;
+      border-radius: 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+    }
+
+    .stat .k {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .stat .v {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .stat .s {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .action-btn {
+      min-height: 56px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 10px 12px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      justify-content: center;
+      transition: transform var(--speed), border-color var(--speed), background var(--speed);
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+
+    .action-btn .t {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .action-btn .d {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .controls {
+      display: grid;
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .input,
+    .select {
+      width: 100%;
+      min-height: 56px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      padding: 0 14px;
+      outline: none;
+      transition: border-color var(--speed), box-shadow var(--speed), background var(--speed);
+    }
+
+    .input:focus,
+    .select:focus {
+      border-color: color-mix(in srgb, var(--accent) 48%, transparent);
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+
+    .range {
+      width: 100%;
+      accent-color: var(--accent);
+      min-height: 56px;
+    }
+
+    .btn {
+      min-height: 56px;
+      border-radius: 16px;
+      border: 1px solid transparent;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 700;
+      transition: transform var(--speed), background var(--speed), color var(--speed), border-color var(--speed);
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    .btn-danger {
+      background: color-mix(in srgb, var(--red) 16%, var(--surface));
+      color: var(--text);
+      border-color: color-mix(in srgb, var(--red) 28%, transparent);
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .item .meta {
+      display: grid;
+      gap: 4px;
+    }
+
+    .item .meta .title {
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .item .meta .desc {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .macro-wrap {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .ring {
+      --p: 50;
+      --c: var(--accent);
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        conic-gradient(var(--c) calc(var(--p) * 1%), rgba(127, 127, 127, 0.16) 0);
+      display: grid;
+      place-items: center;
+      position: relative;
+      border: 1px solid var(--border);
+    }
+
+    .ring::after {
+      content: "";
+      position: absolute;
+      inset: 12%;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+
+    .ring .inner {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      display: grid;
+      gap: 2px;
+    }
+
+    .ring .inner strong {
+      font-size: 18px;
+      letter-spacing: -0.03em;
+    }
+
+    .ring .inner span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .chart {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      align-items: end;
+      min-height: 180px;
+    }
+
+    .bar {
+      display: grid;
+      gap: 8px;
+      justify-items: center;
+    }
+
+    .bar .track {
+      width: 100%;
+      height: 150px;
+      border-radius: 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      display: flex;
+      align-items: end;
+    }
+
+    .bar .fill {
+      width: 100%;
+      border-radius: 16px 16px 0 0;
+      background: linear-gradient(180deg, var(--accent-2), var(--accent));
+      min-height: 4px;
+    }
+
+    .bar .lab {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: calc(var(--nav-h) + 18px);
+      transform: translateX(-50%);
+      z-index: 60;
+      min-height: 48px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--speed), transform var(--speed);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+      .quick-actions { grid-template-columns: repeat(2, 1fr); }
+      .macro-wrap { grid-template-columns: 1fr; }
+      .chart { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    @media (max-width: 640px) {
+      .main { padding: 12px; }
+      .grid-3, .grid-2 { grid-template-columns: 1fr; }
+      .quick-actions { grid-template-columns: 1fr 1fr; }
+      .nav-btn { font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-inner">
+        <div class="brand">
+          <h1>Athlon</h1>
+          <p>Behavior-driven fitness operating system</p>
+        </div>
+        <div class="header-metrics">
+          <span class="pill" id="pillReadiness">RTT: --</span>
+          <span class="pill" id="pillStatus">State: --</span>
+          <button class="pill pill-ghost" id="themeToggle" type="button" aria-label="Toggle theme">Theme</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <section id="dashboard" class="panel active" aria-label="Dashboard"></section>
+      <section id="plan" class="panel" aria-label="Today's plan"></section>
+      <section id="workout" class="panel" aria-label="Workout mode"></section>
+      <section id="progress" class="panel" aria-label="Progress analytics"></section>
+      <section id="nutrition" class="panel" aria-label="Nutrition dashboard"></section>
+      <section id="settings" class="panel" aria-label="Settings"></section>
+    </main>
+
+    <nav class="nav" aria-label="Primary">
+      <div class="nav-inner">
+        <button class="nav-btn active" data-view="dashboard" type="button"><span class="icon">⌂</span><span>Dashboard</span></button>
+        <button class="nav-btn" data-view="plan" type="button"><span class="icon">◫</span><span>Today</span></button>
+        <button class="nav-btn" data-view="workout" type="button"><span class="icon">◎</span><span>Workout</span></button>
+        <button class="nav-btn" data-view="progress" type="button"><span class="icon">▤</span><span>Progress</span></button>
+        <button class="nav-btn" data-view="nutrition" type="button"><span class="icon">◌</span><span>Nutrition</span></button>
+        <button class="nav-btn" data-view="settings" type="button"><span class="icon">⚙</span><span>Settings</span></button>
+      </div>
+    </nav>
+  </div>
+
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <script>
+    const STORAGE_KEY = "athlon_v1";
+
+    const todayKey = () => new Date().toISOString().slice(0, 10);
+
+    const defaults = {
+      theme: "light",
+      view: "dashboard",
+      profile: {
+        name: "Athlete",
+        bodyweight: 72,
+        goal: "Build strength",
+        focus: "Strength",
+      },
+      signals: {
+        sleep: 7.5,
+        energy: 74,
+        fatigue: 26,
+        soreness: 18,
+        stress: 20,
+        hydration: 78,
+      },
+      workout: {
+        sessionName: "Upper Body",
+        exercise: "Bench Press",
+        restSec: 90,
+        sets: [],
+      },
+      nutrition: {
+        calories: 2200,
+        protein: 160,
+        carbs: 250,
+        fats: 70,
+        waterLiters: 2.8,
+      },
+      history: [],
+      lastSnapshotDay: null,
+    };
+
+    const state = loadState();
+
+    function clone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return clone(defaults);
+        const parsed = JSON.parse(raw);
+        return {
+          ...clone(defaults),
+          ...parsed,
+          profile: { ...clone(defaults.profile), ...(parsed.profile || {}) },
+          signals: { ...clone(defaults.signals), ...(parsed.signals || {}) },
+          workout: { ...clone(defaults.workout), ...(parsed.workout || {}) },
+          nutrition: { ...clone(defaults.nutrition), ...(parsed.nutrition || {}) },
+          history: Array.isArray(parsed.history) ? parsed.history : [],
+        };
+      } catch {
+        return clone(defaults);
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function clamp(n, min, max) {
+      return Math.max(min, Math.min(max, n));
+    }
+
+    function round(n) {
+      return Math.round(n);
+    }
+
+    function statusFor(score) {
+      if (score >= 70) return { label: "Homeostasis", color: "var(--green)" };
+      if (score >= 40) return { label: "Autoregulated", color: "var(--amber)" };
+      return { label: "Overtraining", color: "var(--red)" };
+    }
+
+    function computeReadiness() {
+      const s = state.signals;
+      const sleep = clamp(s.sleep, 4, 9);
+      const energy = clamp(s.energy, 0, 100);
+      const fatigue = clamp(s.fatigue, 0, 100);
+      const soreness = clamp(s.soreness, 0, 100);
+      const stress = clamp(s.stress, 0, 100);
+      const hydration = clamp(s.hydration, 0, 100);
+
+      let score =
+        (sleep / 9) * 28 +
+        (energy / 100) * 28 +
+        (hydration / 100) * 12 -
+        (fatigue / 100) * 26 -
+        (soreness / 100) * 10 -
+        (stress / 100) * 8;
+
+      score = clamp(round(score * 2.1), 0, 100);
+      return score;
+    }
+
+    function snapshotDaily() {
+      const day = todayKey();
+      if (state.lastSnapshotDay === day) return;
+
+      const readiness = computeReadiness();
+      const volume = calculateVolume();
+      state.history.unshift({
+        day,
+        readiness,
+        fatigue: state.signals.fatigue,
+        energy: state.signals.energy,
+        volume,
+      });
+      state.history = state.history.slice(0, 28);
+      state.lastSnapshotDay = day;
+      saveState();
+    }
+
+    function calculateVolume() {
+      return state.workout.sets.reduce((sum, set) => sum + (set.reps * set.weight), 0);
+    }
+
+    function totalReps() {
+      return state.workout.sets.reduce((sum, set) => sum + set.reps, 0);
+    }
+
+    function lastSetLabel() {
+      const last = state.workout.sets[state.workout.sets.length - 1];
+      if (!last) return "No sets yet";
+      return `${last.exercise} · ${last.reps} reps × ${last.weight} kg`;
+    }
+
+    function setTheme(theme) {
+      state.theme = theme === "dark" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", state.theme);
+      saveState();
+      render();
+    }
+
+    function toggleTheme() {
+      setTheme(state.theme === "dark" ? "light" : "dark");
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById("toast");
+      toast.textContent = text;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function setView(view) {
+      state.view = view;
+      saveState();
+      render();
+    }
+
+    function renderPanels() {
+      const readiness = computeReadiness();
+      const status = statusFor(readiness);
+      const volume = calculateVolume();
+      const reps = totalReps();
+      const signals = state.signals;
+      const progressData = state.history.length ? state.history.slice(0, 7).reverse() : [];
+
+      const dashboard = document.getElementById("dashboard");
+      dashboard.innerHTML = `
+        <div class="hero">
+          <div class="hero-main">
+            <p class="section-subtitle">Readiness-to-train telemetry</p>
+            <div class="big-score">
+              <div class="value">${readiness}</div>
+              <span class="status" style="background: color-mix(in srgb, ${status.color} 14%, var(--surface)); color: ${status.color};">${status.label}</span>
+            </div>
+            <p class="hint" style="margin-top:10px;">Athlon blends sleep, energy, fatigue, soreness, stress, and hydration in  const fatiguePenalty = state.fatigue * 0.6;
 
   state.readiness = Math.max(
     0,
