@@ -1,40 +1,10 @@
-<section class="max-w-7xl mx-auto grid gap-4 pb-28">
-  <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
-    <div class="flex items-start justify-between gap-4 flex-wrap">
-      <div>
-        <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Adaptive workout mode</p>
-        <h2 class="mt-2 text-3xl font-black tracking-tight">Workout Matrix</h2>
-        <p class="mt-2 text-sm text-[var(--muted)]">Training splits adapt to experience, pain zones, and equipment access in real time.</p>
-      </div>
-      <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 min-w-[160px]">
-        <p class="text-xs text-[var(--muted)]">Stopwatch</p>
-        <p id="workoutTimer" class="mt-1 text-3xl font-black tracking-tight">00:00</p>
-      </div>
-    </div>
+<h1>Workout</h1>
 
-    <div class="mt-5 grid gap-4 lg:grid-cols-[1fr_auto] items-start">
-      <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
-        <p class="text-xs text-[var(--muted)]">Current split</p>
-        <p id="splitLabel" class="mt-1 text-sm font-semibold">—</p>
-      </div>
-      <button id="surveyBtn" type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 font-extrabold">
-        Progression Review
-      </button>
-    </div>
-  </div>
-
-  <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
-    <div class="flex items-center justify-between gap-3 flex-wrap">
-      <div>
-        <h3 class="text-lg font-bold tracking-tight">Active set grid</h3>
-        <p class="mt-1 text-sm text-[var(--muted)]">Checkboxes are large enough for sweaty hands and flash on completion.</p>
-      </div>
-      <button id="adaptBtn" type="button" class="min-h-[56px] rounded-2xl bg-[var(--accent)] px-5 font-extrabold text-white">
-        Adapt Exercise
-      </button>
-    </div>
-
-    <div class="mt-4 overflow-x-auto">
+<table>
+  <tr><td>Squat</td><td><input type="checkbox"></td></tr>
+  <tr><td>Bench</td><td><input type="checkbox"></td></tr>
+  <tr><td>Deadlift</td><td><input type="checkbox"></td></tr>
+</table>    <div class="mt-4 overflow-x-auto">
       <table class="w-full border-separate border-spacing-y-3">
         <thead>
           <tr class="text-left text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
