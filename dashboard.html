@@ -1,0 +1,318 @@
+<section class="max-w-6xl mx-auto grid gap-4">
+  <div class="grid gap-4 xl:grid-cols-[1.2fr_.8fr]">
+    <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+      <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Biometric telemetry center</p>
+      <div class="mt-2 flex items-end justify-between gap-4 flex-wrap">
+        <div>
+          <h2 class="text-3xl font-black tracking-tight">Recovery Dashboard</h2>
+          <p class="mt-2 text-sm text-[var(--muted)]">Calorie targets, recovery zones, and readiness update live with every input.</p>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 min-w-[180px]">
+          <p class="text-xs text-[var(--muted)]">Active goal</p>
+          <p id="activeGoalText" class="mt-1 text-sm font-bold">—</p>
+        </div>
+      </div>
+
+      <div class="mt-5 grid gap-4 lg:grid-cols-3">
+        <label class="grid gap-2">
+          <span class="text-xs text-[var(--muted)]">Activity multiplier</span>
+          <select id="activityMultiplier" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none">
+            <option value="1.2">Sedentary (1.2)</option>
+            <option value="1.375">Light (1.375)</option>
+            <option value="1.55" selected>Moderate (1.55)</option>
+            <option value="1.725">Active (1.725)</option>
+          </select>
+        </label>
+
+        <label class="grid gap-2">
+          <span class="text-xs text-[var(--muted)]">HRV (last night)</span>
+          <input id="hrvInput" type="number" min="1" step="0.1" value="62" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" />
+        </label>
+
+        <label class="grid gap-2">
+          <span class="text-xs text-[var(--muted)]">RHR (resting heart rate)</span>
+          <input id="rhrInput" type="number" min="20" step="1" value="60" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" />
+        </label>
+      </div>
+
+      <div class="mt-5 grid gap-4 md:grid-cols-4">
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">BMR</p>
+          <p id="bmrValue" class="mt-1 text-2xl font-black tracking-tight">—</p>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">TDEE</p>
+          <p id="tdeeValue" class="mt-1 text-2xl font-black tracking-tight">—</p>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">Goal calories</p>
+          <p id="goalCaloriesValue" class="mt-1 text-2xl font-black tracking-tight">—</p>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">RTT</p>
+          <p id="rttValue" class="mt-1 text-2xl font-black tracking-tight">—</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h3 class="text-lg font-bold tracking-tight">Recovery Zone</h3>
+          <p id="zoneLabel" class="mt-1 text-sm text-[var(--muted)]">—</p>
+        </div>
+        <div id="zoneBadge" class="min-h-[40px] rounded-full px-4 inline-flex items-center font-bold text-sm border border-[var(--border)]">—</div>
+      </div>
+
+      <div class="mt-5 grid place-items-center">
+        <svg viewBox="0 0 120 120" class="w-[240px] max-w-full">
+          <circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-opacity=".12" stroke-width="10"></circle>
+          <circle id="ringProgress" cx="60" cy="60" r="46" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="289.027" stroke-dashoffset="289.027"></circle>
+          <text id="ringValue" x="60" y="64" text-anchor="middle" class="fill-[var(--text)]" style="font-size:28px;font-weight:900;letter-spacing:-0.05em;">—</text>
+          <text x="60" y="80" text-anchor="middle" class="fill-[var(--muted)]" style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;">RTT</text>
+        </svg>
+      </div>
+
+      <div class="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+        <p id="zonePlan" class="text-sm font-semibold leading-6">—</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-4 xl:grid-cols-[1.05fr_.95fr]">
+    <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+      <h3 class="text-lg font-bold tracking-tight">Morning biomarker inputs</h3>
+      <p class="mt-1 text-sm text-[var(--muted)]">HRV and RHR drive the readiness model immediately.</p>
+
+      <div class="mt-4 grid gap-4 md:grid-cols-2">
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+          <p class="text-xs text-[var(--muted)]">HRV score</p>
+          <p id="hrvScoreText" class="mt-1 text-2xl font-black">—</p>
+          <p class="mt-2 text-xs text-[var(--muted)]">Z-scored against a 62 ms baseline</p>
+        </div>
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+          <p class="text-xs text-[var(--muted)]">RHR score</p>
+          <p id="rhrScoreText" class="mt-1 text-2xl font-black">—</p>
+          <p class="mt-2 text-xs text-[var(--muted)]">Higher is better when resting heart rate is stable</p>
+        </div>
+      </div>
+
+      <div class="mt-4 grid gap-4 md:grid-cols-2">
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">Goal calories</p>
+          <p id="goalCaloriesDetail" class="mt-1 text-sm font-semibold">—</p>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">Daily calories</p>
+          <p id="dailyCaloriesDetail" class="mt-1 text-sm font-semibold">—</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+      <h3 class="text-lg font-bold tracking-tight">Calorie and macro summary</h3>
+      <div class="mt-4 grid gap-3">
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4 flex items-center justify-between gap-4">
+          <div>
+            <p class="text-xs text-[var(--muted)]">Protein</p>
+            <p id="proteinText" class="mt-1 text-sm font-semibold">—</p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-[var(--muted)]">g/kg</p>
+            <p id="proteinRuleText" class="mt-1 text-sm font-semibold">—</p>
+          </div>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4 flex items-center justify-between gap-4">
+          <div>
+            <p class="text-xs text-[var(--muted)]">Fat</p>
+            <p id="fatText" class="mt-1 text-sm font-semibold">—</p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-[var(--muted)]">% of calories</p>
+            <p id="fatRuleText" class="mt-1 text-sm font-semibold">25%</p>
+          </div>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4 flex items-center justify-between gap-4">
+          <div>
+            <p class="text-xs text-[var(--muted)]">Carbohydrates</p>
+            <p id="carbText" class="mt-1 text-sm font-semibold">—</p>
+          </div>
+          <div class="text-right">
+            <p class="text-xs text-[var(--muted)]">Remaining energy</p>
+            <p id="carbRuleText" class="mt-1 text-sm font-semibold">—</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const session = window.userSession || (window.userSession = {});
+  session.profile = session.profile || { name: "", gender: "male", age: 28, heightCm: 178, weightKg: 72, goal: "maintenance" };
+  session.biometrics = session.biometrics || { hrv: 62, rhr: 60 };
+
+  const inputs = {
+    activity: document.getElementById("activityMultiplier"),
+    hrv: document.getElementById("hrvInput"),
+    rhr: document.getElementById("rhrInput"),
+  };
+
+  const fields = {
+    activeGoalText: document.getElementById("activeGoalText"),
+    bmrValue: document.getElementById("bmrValue"),
+    tdeeValue: document.getElementById("tdeeValue"),
+    goalCaloriesValue: document.getElementById("goalCaloriesValue"),
+    rttValue: document.getElementById("rttValue"),
+    zoneLabel: document.getElementById("zoneLabel"),
+    zoneBadge: document.getElementById("zoneBadge"),
+    zonePlan: document.getElementById("zonePlan"),
+    ringProgress: document.getElementById("ringProgress"),
+    ringValue: document.getElementById("ringValue"),
+    hrvScoreText: document.getElementById("hrvScoreText"),
+    rhrScoreText: document.getElementById("rhrScoreText"),
+    goalCaloriesDetail: document.getElementById("goalCaloriesDetail"),
+    dailyCaloriesDetail: document.getElementById("dailyCaloriesDetail"),
+    proteinText: document.getElementById("proteinText"),
+    fatText: document.getElementById("fatText"),
+    carbText: document.getElementById("carbText"),
+    proteinRuleText: document.getElementById("proteinRuleText"),
+    carbRuleText: document.getElementById("carbRuleText"),
+  };
+
+  const hrvMean = 62;
+  const hrvStd = 8;
+  const rhrMean = 60;
+
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function getGoalDelta(goal) {
+    if (goal === "fat_loss") return -0.2;
+    if (goal === "muscle_gain") return 0.1;
+    return 0;
+  }
+
+  function getProteinFactor(goal) {
+    if (goal === "fat_loss") return 2.2;
+    if (goal === "muscle_gain") return 1.8;
+    return 2.0;
+  }
+
+  function compute() {
+    const profile = session.profile;
+    const weight = Number(profile.weightKg || 72);
+    const height = Number(profile.heightCm || 178);
+    const age = Number(profile.age || 28);
+    const gender = String(profile.gender || "male");
+    const activity = Number(inputs.activity.value);
+    const goal = String(profile.goal || "maintenance");
+
+    const bmrBase =
+      (10 * weight) +
+      (6.25 * height) -
+      (5 * age) +
+      (gender === "female" ? -161 : 5);
+
+    const bmi = weight / Math.pow(height / 100, 2);
+    const bmr = bmi >= 30 ? bmrBase * 0.92 : bmrBase;
+    const tdee = bmr * activity;
+    const delta = getGoalDelta(goal);
+    const goalCalories = tdee * (1 + delta);
+
+    const proteinFactor = getProteinFactor(goal);
+    const proteinG = weight * proteinFactor;
+    const fatG = ((goalCalories * 0.25) / 9);
+    const carbG = Math.max(0, (goalCalories - (proteinG * 4) - (fatG * 9)) / 4);
+
+    const hrv = Number(inputs.hrv.value);
+    const rhr = Number(inputs.rhr.value);
+    const z = (Math.log(Math.max(1, hrv)) - Math.log(hrvMean)) / 0.18;
+    const scoreHRV = clamp(50 + (z * 17.5), 0, 100);
+    const scoreSleep = 100; // retained for future extension
+    const rhrDelta = rhr - rhrMean;
+    const scoreRHR = rhrDelta <= 0 ? 100 : Math.max(20, 100 - (rhrDelta * 8));
+    const rtt = clamp((scoreHRV * 0.6) + (scoreRHR * 0.4), 0, 100);
+
+    let zone = {
+      label: "Homeostasis Fully Restored",
+      badge: "+15% Volume Hypertrophy Plan",
+      color: "var(--green)",
+      plan: "Green zone: scale training volume upward by +15% or add a progressive load jump.",
+    };
+
+    if (rtt < 85 && rtt >= 60) {
+      zone = {
+        label: "Moderate Fatigue Detected",
+        badge: "Deload -20% Set Management",
+        color: "var(--amber)",
+        plan: "Yellow zone: manage fatigue by reducing set volume around 20% to 25%.",
+      };
+    } else if (rtt < 60) {
+      zone = {
+        label: "High Autonomic Stress",
+        badge: "Somatic Mobility / Active Rest",
+        color: "var(--red)",
+        plan: "Red zone: defer heavy work and keep the day focused on mobility and recovery.",
+      };
+    }
+
+    session.rttScore = rtt;
+    session.dailyCalories = goalCalories;
+    session.activityMultiplier = activity;
+    session.profile.goal = goal;
+    session.profile.gender = gender;
+    session.profile.age = age;
+    session.profile.heightCm = height;
+    session.profile.weightKg = weight;
+    session.biometrics.hrv = hrv;
+    session.biometrics.rhr = rhr;
+
+    window.saveUserSession?.();
+
+    fields.activeGoalText.textContent = goal.replace("_", " ");
+    fields.bmrValue.textContent = Math.round(bmr);
+    fields.tdeeValue.textContent = Math.round(tdee);
+    fields.goalCaloriesValue.textContent = Math.round(goalCalories);
+    fields.rttValue.textContent = Math.round(rtt);
+    fields.zoneLabel.textContent = zone.label;
+    fields.zoneBadge.textContent = zone.badge;
+    fields.zoneBadge.style.color = zone.color;
+    fields.zoneBadge.style.borderColor = zone.color;
+    fields.zoneBadge.style.background = `color-mix(in srgb, ${zone.color} 12%, var(--surface))`;
+    fields.zonePlan.textContent = zone.plan;
+    fields.ringValue.textContent = Math.round(rtt);
+    fields.hrvScoreText.textContent = Math.round(scoreHRV);
+    fields.rhrScoreText.textContent = Math.round(scoreRHR);
+    fields.goalCaloriesDetail.textContent = `${Math.round(goalCalories)} kcal target`;
+    fields.dailyCaloriesDetail.textContent = `${Math.round(goalCalories)} kcal synced`;
+    fields.proteinText.textContent = `${Math.round(proteinG)} g`;
+    fields.fatText.textContent = `${Math.round(fatG)} g`;
+    fields.carbText.textContent = `${Math.round(carbG)} g`;
+    fields.proteinRuleText.textContent = `${proteinFactor.toFixed(1)} g/kg`;
+    fields.carbRuleText.textContent = `${Math.round(carbG)} g remaining`;
+    fields.ringProgress.style.stroke = zone.color;
+
+    const circumference = 289.027;
+    fields.ringProgress.setAttribute("stroke-dasharray", `${circumference}`);
+    fields.ringProgress.setAttribute("stroke-dashoffset", `${circumference * (1 - (rtt / 100))}`);
+
+    document.documentElement.style.setProperty("--accent", zone.color === "var(--green)" ? "#059669" : zone.color === "var(--amber)" ? "#D97706" : "#DC2626");
+    document.documentElement.style.setProperty("--state-color", zone.color);
+  }
+
+  ["input", "change"].forEach((evt) => {
+    inputs.activity.addEventListener(evt, compute);
+    inputs.hrv.addEventListener(evt, compute);
+    inputs.rhr.addEventListener(evt, compute);
+  });
+
+  compute();
+
+  window.addEventListener("athlon:view-mounted", (event) => {
+    if (event.detail?.route === "dashboard") compute();
+  });
+})();
+</script>
