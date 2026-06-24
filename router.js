@@ -1,40 +1,33 @@
 const cache = {};
 
-window.userSession = {
-  authenticated: false,
-  rttScore: 0,
-  dailyCalories: 0
-};
-
-async function loadView(view){
-  const app = document.getElementById("app-canvas");
-
-  if(cache[view]){
-    app.innerHTML = cache[view];
-    return;
-  }
-
-  try {
-    const res = await fetch(`${view}.html`);
-    const html = await res.text();
-
-    cache[view] = html;
-    app.innerHTML = html;
-
-  } catch(e){
-    app.innerHTML = `<div style="padding:20px">Failed to load ${view}</div>`;
-  }
-}
-
 window.router = {
-  navigate: async (view) => {
-    if(view !== "auth" && !window.userSession.authenticated){
-      return loadView("auth");
+  go: async (page) => {
+    const app = document.getElementById("app");
+
+    if(cache[page]){
+      app.innerHTML = cache[page];
+      window.dispatchEvent(new Event("viewChanged"));
+      return;
     }
-    await loadView(view);
+
+    try {
+      const res = await fetch(page + ".html");
+      const html = await res.text();
+
+      cache[page] = html;
+      app.innerHTML = html;
+
+      window.dispatchEvent(new Event("viewChanged"));
+
+    } catch (e) {
+      app.innerHTML = "<h2>Page load error</h2>";
+    }
   }
 };
 
+window.addEventListener("DOMContentLoaded", () => {
+  router.go("dashboard");
+});
 window.addEventListener("DOMContentLoaded", () => {
   router.navigate("auth");
 });  function normalizeRoute(route) {
