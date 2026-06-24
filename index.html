@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Athlon</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+/* =========================
+   ATHLON DESIGN SYSTEM
+========================= */
+:root {
+  --bg: #F9FAFB;
+  --surface: #FFFFFF;
+  --text: #111827;
+  --muted: #4B5563;
+  --accent: #7C3AED;
+
+  --green: #34D399;
+  --amber: #FBBF24;
+  --red: #F87171;
+
+  --radius: 16px;
+  --speed: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] {
+  --bg: #0A0D14;
+  --surface: #121824;
+  --text: #F9FAFB;
+  --muted: #9CA3AF;
+  --accent: #A78BFA;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  transition: background var(--speed), color var(--speed);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* =========================
+   LAYOUT
+========================= */
+.app {
+  max-width: 960px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button {
+  min-height: 56px;
+  min-width: 56px;
+  border-radius: 12px;
+}
+
+/* =========================
+   VIEWS
+========================= */
+.view {
+  display: none;
+  padding: 16px;
+}
+
+.view.active {
+  display: block;
+}
+
+/* =========================
+   NAVIGATION
+========================= */
+nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 10px;
+  background: var(--surface);
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.nav-btn {
+  flex: 1;
+  min-height: 56px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.nav-btn.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- HEADER -->
+  <header>
+    <div>
+      <h1 style="font-size:18px;font-weight:600;">Athlon</h1>
+      <p style="font-size:12px;color:var(--muted);">Performance Operating System</p>
+    </div>
+
+    <button id="themeBtn">Theme</button>
+  </header>
+
+  <!-- VIEWS -->
+  <main style="flex:1;">
+
+    <section id="dashboard" class="view active">
+      <h2>Dashboard</h2>
+      <p>Readiness-to-Train overview (placeholder)</p>
+    </section>
+
+    <section id="plan" class="view">
+      <h2>Today’s Plan</h2>
+    </section>
+
+    <section id="workout" class="view">
+      <h2>Workout Mode</h2>
+    </section>
+
+    <section id="progress" class="view">
+      <h2>Progress</h2>
+    </section>
+
+    <section id="nutrition" class="view">
+      <h2>Nutrition</h2>
+    </section>
+
+    <section id="settings" class="view">
+      <h2>Settings</h2>
+    </section>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav>
+    <button class="nav-btn active" data-view="dashboard">Home</button>
+    <button class="nav-btn" data-view="plan">Plan</button>
+    <button class="nav-btn" data-view="workout">Workout</button>
+    <button class="nav-btn" data-view="progress">Progress</button>
+    <button class="nav-btn" data-view="nutrition">Food</button>
+    <button class="nav-btn" data-view="settings">Settings</button>
+  </nav>
+
+</div>
+
+<script>
+const views = document.querySelectorAll(".view");
+const navBtns = document.querySelectorAll(".nav-btn");
+
+/* SPA SWITCHER */
+navBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const target = btn.dataset.view;
+
+    views.forEach(v => v.classList.remove("active"));
+    document.getElementById(target).classList.add("active");
+
+    navBtns.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  });
+});
+
+/* THEME TOGGLE */
+document.getElementById("themeBtn").addEventListener("click", () => {
+  const root = document.documentElement;
+  const current = root.getAttribute("data-theme");
+  root.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+});
+</script>
+
+</body>
+</html>
