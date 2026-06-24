@@ -1,0 +1,200 @@
+<section class="max-w-5xl mx-auto grid lg:grid-cols-[1.1fr_.9fr] gap-4">
+  <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+    <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Quiet luxury onboarding</p>
+    <h2 class="mt-2 text-3xl font-black tracking-tight text-[var(--text)]">Create your Athlon profile</h2>
+    <p class="mt-2 text-sm text-[var(--muted)] max-w-xl">
+      A clean, minimal setup that captures the exact inputs Athlon needs to personalize readiness, calories, and training output.
+    </p>
+
+    <div class="mt-5 grid grid-cols-3 gap-2" id="auth-steps">
+      <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] font-bold text-sm step-btn is-active" data-step="login">Login</button>
+      <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-bold text-sm step-btn" data-step="signup">Signup</button>
+      <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-bold text-sm step-btn" data-step="biometric">Biometric Setup</button>
+    </div>
+
+    <form id="auth-form" class="mt-5 space-y-4">
+      <div id="step-login" class="step-panel space-y-4">
+        <div class="grid gap-4 lg:grid-cols-2">
+          <label class="grid gap-2">
+            <span class="text-xs text-[var(--muted)]">Name</span>
+            <input id="name" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none focus:ring-4 focus:ring-[color-mix(in_srgb,var(--accent)_18%,transparent)]" placeholder="Alex" />
+          </label>
+          <label class="grid gap-2">
+            <span class="text-xs text-[var(--muted)]">Gender</span>
+            <select id="gender" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none focus:ring-4 focus:ring-[color-mix(in_srgb,var(--accent)_18%,transparent)]">
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid gap-2">
+          <span class="text-xs text-[var(--muted)]">Profile intent</span>
+          <div class="grid grid-cols-1 gap-2 md:grid-cols-3">
+            <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-semibold objective-btn is-active" data-goal="fat_loss">Fat Loss</button>
+            <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-semibold objective-btn" data-goal="muscle_gain">Muscle Gain</button>
+            <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-semibold objective-btn" data-goal="maintenance">Performance Maintenance</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="step-signup" class="step-panel hidden space-y-4">
+        <div class="grid gap-4 lg:grid-cols-3">
+          <label class="grid gap-2">
+            <span class="text-xs text-[var(--muted)]">Age</span>
+            <input id="age" type="number" min="10" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" value="28" />
+          </label>
+          <label class="grid gap-2">
+            <span class="text-xs text-[var(--muted)]">Height (cm)</span>
+            <input id="heightCm" type="number" min="100" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" value="178" />
+          </label>
+          <label class="grid gap-2">
+            <span class="text-xs text-[var(--muted)]">Weight (kg)</span>
+            <input id="weightKg" type="number" min="20" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" value="72" />
+          </label>
+        </div>
+      </div>
+
+      <div id="step-biometric" class="step-panel hidden space-y-4">
+        <div class="grid gap-4 lg:grid-cols-2">
+          <label class="grid gap-2">
+            <span class="text-xs text-[var(--muted)]">Primary Fitness Objective</span>
+            <select id="goal" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none">
+              <option value="fat_loss">Fat Loss</option>
+              <option value="muscle_gain">Muscle Gain</option>
+              <option value="maintenance">Performance Maintenance</option>
+            </select>
+          </label>
+          <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+            <p class="text-xs text-[var(--muted)]">Biometric setup</p>
+            <p class="mt-2 text-sm text-[var(--text)] leading-6">
+              Athlon will use these inputs to calculate recovery, calorie targets, and recovery-zone programming.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <button id="completeBtn" type="submit" class="min-h-[56px] w-full rounded-2xl bg-[var(--accent)] px-4 font-extrabold text-white shadow-[0_12px_24px_color-mix(in_srgb,var(--accent)_20%,transparent)] transition-transform duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5">
+        Complete Profile &amp; Sync
+      </button>
+    </form>
+  </div>
+
+  <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+    <h3 class="text-lg font-bold tracking-tight">Profile preview</h3>
+    <div class="mt-4 grid gap-3">
+      <div class="rounded-2xl bg-[var(--surface-2)] p-4 border border-[var(--border)]">
+        <p class="text-xs text-[var(--muted)]">Current state</p>
+        <p id="previewState" class="mt-1 text-sm font-semibold">Not synced yet</p>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-2xl bg-[var(--surface-2)] p-4 border border-[var(--border)]">
+          <p class="text-xs text-[var(--muted)]">Goal</p>
+          <p id="previewGoal" class="mt-1 text-sm font-semibold">—</p>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] p-4 border border-[var(--border)]">
+          <p class="text-xs text-[var(--muted)]">Bodyweight</p>
+          <p id="previewWeight" class="mt-1 text-sm font-semibold">— kg</p>
+        </div>
+      </div>
+      <div class="rounded-2xl bg-[var(--surface-2)] p-4 border border-[var(--border)]">
+        <p class="text-xs text-[var(--muted)]">What happens next</p>
+        <p class="mt-1 text-sm text-[var(--text)] leading-6">
+          Your profile is written to the shared global session, and Athlon will switch straight into the Dashboard after sync.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const stepButtons = Array.from(document.querySelectorAll(".step-btn"));
+  const stepPanels = {
+    login: document.getElementById("step-login"),
+    signup: document.getElementById("step-signup"),
+    biometric: document.getElementById("step-biometric"),
+  };
+
+  const objectiveButtons = Array.from(document.querySelectorAll(".objective-btn"));
+  const previewState = document.getElementById("previewState");
+  const previewGoal = document.getElementById("previewGoal");
+  const previewWeight = document.getElementById("previewWeight");
+  const form = document.getElementById("auth-form");
+
+  const fields = {
+    name: document.getElementById("name"),
+    gender: document.getElementById("gender"),
+    age: document.getElementById("age"),
+    heightCm: document.getElementById("heightCm"),
+    weightKg: document.getElementById("weightKg"),
+    goal: document.getElementById("goal"),
+  };
+
+  let currentStep = "login";
+
+  function updatePreview() {
+    const name = fields.name.value.trim() || "Athlete";
+    const goal = fields.goal.value;
+    const weight = fields.weightKg.value || "72";
+    previewState.textContent = `${name} · ${fields.gender.value} · ${fields.age.value || 28}y`;
+    previewGoal.textContent = goal.replace("_", " ");
+    previewWeight.textContent = `${weight} kg`;
+  }
+
+  function setStep(step) {
+    currentStep = step;
+    stepButtons.forEach((btn) => btn.classList.toggle("is-active", btn.dataset.step === step));
+    Object.entries(stepPanels).forEach(([key, panel]) => {
+      panel.classList.toggle("hidden", key !== step);
+    });
+  }
+
+  function setGoal(goal) {
+    fields.goal.value = goal;
+    objectiveButtons.forEach((btn) => btn.classList.toggle("is-active", btn.dataset.goal === goal));
+    updatePreview();
+  }
+
+  stepButtons.forEach((btn) => {
+    btn.addEventListener("click", () => setStep(btn.dataset.step));
+  });
+
+  objectiveButtons.forEach((btn) => {
+    btn.addEventListener("click", () => setGoal(btn.dataset.goal));
+  });
+
+  Object.values(fields).forEach((field) => {
+    field.addEventListener("input", updatePreview);
+    field.addEventListener("change", updatePreview);
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const session = window.userSession || (window.userSession = {});
+    session.profile = {
+      name: fields.name.value.trim() || "Athlete",
+      gender: fields.gender.value,
+      age: Number(fields.age.value || 28),
+      heightCm: Number(fields.heightCm.value || 178),
+      weightKg: Number(fields.weightKg.value || 72),
+      goal: fields.goal.value,
+    };
+    session.authenticated = true;
+
+    window.saveUserSession?.();
+
+    if (window.router?.navigate) {
+      await window.router.navigate("dashboard");
+    }
+  });
+
+  updatePreview();
+
+  if (window.userSession?.authenticated) {
+    previewState.textContent = "Profile already synced";
+    setStep("biometric");
+  }
+})();
+</script>
