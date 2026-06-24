@@ -5,31 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Athlon</title>
 
+
 <script>
 /* =========================
-   ATHLON STATE ENGINE
+   ATHLON STATE ENGINE (UPGRADED)
 ========================= */
 
 const state = {
   energy: 70,
   fatigue: 30,
   sleep: 7,
-  readiness: 0
+  readiness: 0,
+  sets: []
 };
 
-/* Load saved state */
+/* Load saved */
 const saved = localStorage.getItem("athlon_state");
-if (saved) {
-  Object.assign(state, JSON.parse(saved));
-}
+if (saved) Object.assign(state, JSON.parse(saved));
 
-/* Save state */
-function saveState() {
+function save() {
   localStorage.setItem("athlon_state", JSON.stringify(state));
 }
 
 /* =========================
-   READINESS CALCULATION
+   READINESS ENGINE
 ========================= */
 
 function calculateReadiness() {
@@ -37,11 +36,12 @@ function calculateReadiness() {
   const energyFactor = state.energy * 0.4;
   const fatiguePenalty = state.fatigue * 0.6;
 
-  let score = sleepFactor + energyFactor - fatiguePenalty;
+  state.readiness = Math.max(
+    0,
+    Math.min(100, Math.round(sleepFactor + energyFactor - fatiguePenalty))
+  );
 
-  state.readiness = Math.max(0, Math.min(100, Math.round(score)));
-
-  saveState();
+  save();
 }
 
 /* =========================
@@ -55,7 +55,7 @@ function getStatus(score) {
 }
 
 /* =========================
-   DASHBOARD UI UPDATE
+   DASHBOARD
 ========================= */
 
 function renderDashboard() {
@@ -70,43 +70,109 @@ function renderDashboard() {
       <h1 style="font-size:40px;margin:10px 0;">${state.readiness}</h1>
       <p style="color:${status.color};font-weight:600;">${status.label}</p>
     </div>
-
-    <div style="margin-top:12px;color:var(--muted);font-size:13px;">
-      Energy: ${state.energy}<br/>
-      Fatigue: ${state.fatigue}<br/>
-      Sleep: ${state.sleep}h
-    </div>
   `;
 }
 
 /* =========================
-   SIMULATION (auto change)
+   WORKOUT SYSTEM
 ========================= */
 
-function simulate() {
-  state.energy = Math.max(0, Math.min(100, state.energy + (Math.random()*10 - 5)));
-  state.fatigue = Math.max(0, Math.min(100, state.fatigue + (Math.random()*10 - 3)));
-  state.sleep = Math.max(4, Math.min(9, state.sleep + (Math.random()*2 - 1)));
+function addSet() {
+  const reps = parseInt(document.getElementById("reps").value);
+  const weight = parseInt(document.getElementById("weight").value);
+
+  if (!reps || !weight) return;
+
+  const set = {
+    reps,
+    weight,
+    timestamp: Date.now()
+  };
+
+  state.sets.push(set);
+
+  /* FATIGUE LOGIC (important) */
+  state.fatigue += reps * 0.2 + weight * 0.05;
+  state.energy -= reps * 0.1;
+
+  state.fatigue = Math.min(100, state.fatigue);
+  state.energy = Math.max(0, state.energy);
 
   calculateReadiness();
+  save();
+
+  renderWorkout();
   renderDashboard();
 }
 
 /* =========================
-   START APP
+   WORKOUT UI RENDER
+========================= */
+
+function renderWorkout() {
+  const el = document.getElementById("sets");
+
+  el.innerHTML = state.sets
+    .slice()
+    .reverse()
+    .map(s => `
+      <div style="
+        padding:10px;
+        margin-top:8px;
+        background:var(--surface);
+        border-radius:10px;
+        font-size:13px;
+      ">
+        ${s.reps} reps × ${s.weight} kg
+      </div>
+    `).join("");
+}
+
+/* =========================
+   SIMULATION
+========================= */
+
+function simulate() {
+  state.energy = Math.max(0, Math.min(100, state.energy + (Math.random()*6 - 3)));
+  state.fatigue = Math.max(0, Math.min(100, state.fatigue + (Math.random()*4 - 2)));
+
+  calculateReadiness();
+  renderDashboard();
+  renderWorkout();
+}
+
+/* =========================
+   NAVIGATION (same as before)
+========================= */
+
+const views = document.querySelectorAll(".view");
+const navBtns = document.querySelectorAll(".nav-btn");
+
+navBtns.forEach(btn => {
+  btn.addEventListener("click", () => {
+    const target = btn.dataset.view;
+
+    views.forEach(v => v.classList.remove("active"));
+    document.getElementById(target).classList.add("active");
+
+    navBtns.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  });
+});
+
+/* =========================
+   INIT
 ========================= */
 
 function init() {
   calculateReadiness();
   renderDashboard();
+  renderWorkout();
 }
 
 init();
-
-/* updates every 5 seconds (demo effect) */
 setInterval(simulate, 5000);
 </script>
-
 <style>
 /* =========================
    ATHLON DESIGN SYSTEM
@@ -224,9 +290,24 @@ nav {
   <!-- VIEWS -->
   <main style="flex:1;">
 
-    <section id="dashboard" class="view active">
-      <h2>Dashboard</h2>
-      <p>Readiness-to-Train overview (placeholder)</p>
+    <section id="workout" class="view">
+  <h2>Workout Mode</h2>
+
+  <div style="margin-top:12px;background:var(--surface);padding:16px;border-radius:16px;">
+    
+    <input id="reps" type="number" placeholder="Reps"
+      style="width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #ddd;"/>
+
+    <input id="weight" type="number" placeholder="Weight (kg)"
+      style="width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid #ddd;"/>
+
+    <button onclick="addSet()"
+      style="width:100%;padding:14px;border-radius:12px;background:var(--accent);color:white;">
+      Add Set
+    </button>
+  </div>
+
+  <div id="sets" style="margin-top:12px;"></div>
     </section>
 
     <section id="plan" class="view">
