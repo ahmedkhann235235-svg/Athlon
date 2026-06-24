@@ -92,4 +92,62 @@
     if (event.detail?.route === "settings") syncTheme();
   });
 })();
+</script>    <p class="mt-1 text-sm text-[var(--muted)]">This clears local IndexedDB stores and restarts onboarding.</p>
+    <button id="resetDbBtn" type="button" class="mt-4 min-h-[56px] rounded-2xl bg-[var(--red)] px-4 font-extrabold text-white">
+      Reset Local Database
+    </button>
+  </div>
+</section>
+
+<script>
+(() => {
+  const themeSelect = document.getElementById("themeSelect");
+  const toggleThemeBtn = document.getElementById("toggleThemeBtn");
+  const resetDbBtn = document.getElementById("resetDbBtn");
+  const session = window.userSession || (window.userSession = {});
+
+  function syncTheme() {
+    const theme = session.theme || localStorage.getItem("hpos_theme") || "dark";
+    themeSelect.value = theme;
+  }
+
+  themeSelect.addEventListener("change", () => {
+    window.router?.setTheme(themeSelect.value);
+    session.theme = themeSelect.value;
+    localStorage.setItem("hpos_session", JSON.stringify(session));
+  });
+
+  toggleThemeBtn.addEventListener("click", () => {
+    const next = (session.theme || localStorage.getItem("hpos_theme") || "dark") === "dark" ? "light" : "dark";
+    window.router?.setTheme(next);
+    session.theme = next;
+    localStorage.setItem("hpos_session", JSON.stringify(session));
+    syncTheme();
+  });
+
+  resetDbBtn.addEventListener("click", async () => {
+    if (!confirm("Reset all local data and restart onboarding?")) return;
+
+    await window.db.ready;
+    await window.db.clearAll();
+
+    localStorage.removeItem("hpos_theme");
+    localStorage.removeItem("hpos_session");
+
+    session.authenticated = false;
+    session.profile = null;
+    session.rttScore = 0;
+    session.dailyCalories = 0;
+    localStorage.setItem("hpos_session", JSON.stringify(session));
+
+    window.HPOSHaptics?.success();
+    await window.router.navigate("auth", { replace: true, skipHistory: true });
+  });
+
+  syncTheme();
+
+  window.addEventListener("hpos:view-mounted", (event) => {
+    if (event.detail?.route === "settings") syncTheme();
+  });
+})();
 </script>
