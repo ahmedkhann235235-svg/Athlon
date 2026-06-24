@@ -1,40 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Human Performance OS</title>
 
-<!-- Tailwind -->
 <script src="https://cdn.tailwindcss.com"></script>
-
-<!-- Firebase -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { 
-  getAuth, 
-  onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyC5ks5cfVoBlAddM7G83gG_eAkEIRvv-4E",
-  authDomain: "aclon-789fb.firebaseapp.com",
-  projectId: "aclon-789fb",
-  storageBucket: "aclon-789fb.firebasestorage.app",
-  messagingSenderId: "686587611572",
-  appId: "1:686587611572:web:c4948cbda2bbb4848b4ae1"
-};
-
-window.firebaseApp = initializeApp(firebaseConfig);
-window.auth = getAuth(window.firebaseApp);
-window.db = getFirestore(window.firebaseApp);
-</script>
 
 <style>
 :root{
   --bg:#0A0D14;
+  --card:#121824;
+  --text:#F9FAFB;
+  --accent:#A78BFA;
+}
+
+body{
+  margin:0;
+  font-family: Inter, system-ui;
+  background:var(--bg);
+  color:var(--text);
+}
+
+#app-canvas{
+  min-height:100vh;
+  padding:16px;
+}
+
+.nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  background:var(--card);
+  display:flex;
+  justify-content:space-around;
+  padding:12px;
+}
+button{
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<!-- MAIN VIEWPORT -->
+<main id="app-canvas">Loading...</main>
+
+<!-- NAV -->
+<div class="nav">
+  <button onclick="router.navigate('dashboard')">Dashboard</button>
+  <button onclick="router.navigate('workout')">Workout</button>
+  <button onclick="router.navigate('chatbot')">AI</button>
+  <button onclick="router.navigate('settings')">Settings</button>
+</div>
+
+<script src="router.js"></script>
+
+</body>
+</html>  --bg:#0A0D14;
   --card:#121824;
   --text:#F9FAFB;
   --accent:#A78BFA;
