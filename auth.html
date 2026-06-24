@@ -1,40 +1,44 @@
-<script type="module">
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
-} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+<div style="padding:20px">
+  <h1>Login</h1>
 
-import {
-  doc,
-  setDoc
-} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+  <input id="email" placeholder="email" style="display:block;margin:10px 0;padding:10px">
+  <input id="pass" type="password" placeholder="password" style="display:block;margin:10px 0;padding:10px">
+
+  <button onclick="login()" style="padding:12px;background:#A78BFA;color:white;width:100%">
+    Login
+  </button>
+
+  <button onclick="signup()" style="padding:12px;margin-top:10px;width:100%">
+    Signup
+  </button>
+</div>
+
+<script type="module">
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword }
+from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
 const auth = window.auth;
-const db = window.db;
 
-/* SIGN UP */
-window.signupUser = async function(email, password, profile){
-  const cred = await createUserWithEmailAndPassword(auth, email, password);
+window.login = async () => {
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("pass").value;
 
-  await setDoc(doc(db, "users", cred.user.uid), {
-    ...profile,
-    createdAt: Date.now(),
-    progress: {
-      workouts: [],
-      calories: 0
-    }
-  });
+  await signInWithEmailAndPassword(auth, email, pass);
 
-  window.userSession.user = cred.user;
   window.userSession.authenticated = true;
-
   router.navigate("dashboard");
 };
 
-/* LOGIN */
-window.loginUser = async function(email, password){
-  const cred = await signInWithEmailAndPassword(auth, email, password);
+window.signup = async () => {
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("pass").value;
 
+  await createUserWithEmailAndPassword(auth, email, pass);
+
+  window.userSession.authenticated = true;
+  router.navigate("dashboard");
+};
+</script>
   window.userSession.user = cred.user;
   window.userSession.authenticated = true;
 
