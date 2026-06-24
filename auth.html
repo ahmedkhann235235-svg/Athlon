@@ -1,40 +1,285 @@
-<section class="max-w-5xl mx-auto grid lg:grid-cols-[1.1fr_.9fr] gap-4">
+<section class="max-w-6xl mx-auto grid lg:grid-cols-[1.1fr_.9fr] gap-4">
   <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
     <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Quiet luxury onboarding</p>
-    <h2 class="mt-2 text-3xl font-black tracking-tight text-[var(--text)]">Create your Athlon profile</h2>
+    <h2 class="mt-2 text-3xl font-black tracking-tight text-[var(--text)]">Create your profile</h2>
     <p class="mt-2 text-sm text-[var(--muted)] max-w-xl">
-      A clean, minimal setup that captures the exact inputs Athlon needs to personalize readiness, calories, and training output.
+      A multi-step setup that captures the exact data needed for calories, recovery, and adaptive training.
     </p>
 
     <div class="mt-5 grid grid-cols-3 gap-2" id="auth-steps">
-      <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] font-bold text-sm step-btn is-active" data-step="login">Login</button>
-      <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-bold text-sm step-btn" data-step="signup">Signup</button>
-      <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-bold text-sm step-btn" data-step="biometric">Biometric Setup</button>
+      <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] font-bold text-sm step-btn is-active" data-step="1">Name & Gender</button>
+      <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-bold text-sm step-btn" data-step="2">Body Metrics</button>
+      <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-bold text-sm step-btn" data-step="3">Goals & Limits</button>
     </div>
 
     <form id="auth-form" class="mt-5 space-y-4">
-      <div id="step-login" class="step-panel space-y-4">
+      <div id="step-1" class="step-panel space-y-4">
         <div class="grid gap-4 lg:grid-cols-2">
           <label class="grid gap-2">
             <span class="text-xs text-[var(--muted)]">Name</span>
-            <input id="name" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none focus:ring-4 focus:ring-[color-mix(in_srgb,var(--accent)_18%,transparent)]" placeholder="Alex" />
+            <input id="Name" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none focus:ring-4 focus:ring-[color-mix(in_srgb,var(--accent)_18%,transparent)]" placeholder="Alex" />
           </label>
           <label class="grid gap-2">
             <span class="text-xs text-[var(--muted)]">Gender</span>
-            <select id="gender" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none focus:ring-4 focus:ring-[color-mix(in_srgb,var(--accent)_18%,transparent)]">
+            <select id="Gender" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none">
               <option value="male">Male</option>
               <option value="female">Female</option>
             </select>
           </label>
         </div>
+      </div>
+
+      <div id="step-2" class="step-panel hidden space-y-4">
+        <div class="grid gap-4 lg:grid-cols-3">
+          <label class="grid gap-2">
+            <span class="text-xs text-[var(--muted)]">Age</span>
+            <input id="Age" type="number" min="10" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" value="28" />
+          </label>
+          <label class="grid gap-2">
+            <span class="text-xs text-[var(--muted)]">Height (cm)</span>
+            <input id="Height" type="number" min="100" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" value="178" />
+          </label>
+          <label class="grid gap-2">
+            <span class="text-xs text-[var(--muted)]">Weight (kg)</span>
+            <input id="Weight" type="number" min="20" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" value="72" />
+          </label>
+        </div>
+        <label class="grid gap-2">
+          <span class="text-xs text-[var(--muted)]">Training Experience</span>
+          <select id="TrainingExperience" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none">
+            <option>Beginner</option>
+            <option selected>Intermediate</option>
+            <option>Advanced</option>
+          </select>
+        </label>
+      </div>
+
+      <div id="step-3" class="step-panel hidden space-y-4">
+        <div class="grid gap-4 lg:grid-cols-2">
+          <label class="grid gap-2">
+            <span class="text-xs text-[var(--muted)]">Primary Goal</span>
+            <select id="NutritionGoal" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none">
+              <option value="Fat Loss">Fat Loss</option>
+              <option value="Muscle Gain">Muscle Gain</option>
+              <option value="Performance Maintenance" selected>Performance Maintenance</option>
+            </select>
+          </label>
+
+          <label class="grid gap-2">
+            <span class="text-xs text-[var(--muted)]">Available Equipment</span>
+            <select id="AvailableEquipment" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none">
+              <option>Full Gym</option>
+              <option>Dumbbells</option>
+              <option>Bodyweight</option>
+            </select>
+          </label>
+        </div>
 
         <div class="grid gap-2">
-          <span class="text-xs text-[var(--muted)]">Profile intent</span>
-          <div class="grid grid-cols-1 gap-2 md:grid-cols-3">
-            <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-semibold objective-btn is-active" data-goal="fat_loss">Fat Loss</button>
-            <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-semibold objective-btn" data-goal="muscle_gain">Muscle Gain</button>
-            <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-semibold objective-btn" data-goal="maintenance">Performance Maintenance</button>
+          <span class="text-xs text-[var(--muted)]">Physical Pain Pattern</span>
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-2">
+            <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-semibold pain-btn is-active" data-pain="None">None</button>
+            <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-semibold pain-btn" data-pain="Knee">Knee</button>
+            <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-semibold pain-btn" data-pain="Shoulder">Shoulder</button>
+            <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-semibold pain-btn" data-pain="Lower Back">Lower Back</button>
           </div>
+        </div>
+      </div>
+
+      <div class="grid gap-3 lg:grid-cols-2">
+        <button type="button" id="prevStep" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 font-extrabold">Back</button>
+        <button id="completeBtn" type="submit" class="min-h-[56px] rounded-2xl bg-[var(--accent)] px-4 font-extrabold text-white shadow-[0_12px_24px_color-mix(in_srgb,var(--accent)_20%,transparent)] transition-transform duration-150 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5">
+          Complete Profile & Sync
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+    <h3 class="text-lg font-bold tracking-tight">Live metabolic preview</h3>
+
+    <div class="mt-4 grid gap-3">
+      <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+        <p class="text-xs text-[var(--muted)]">Current step</p>
+        <p id="previewStep" class="mt-1 text-sm font-semibold">1 of 3</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">BMR</p>
+          <p id="previewBmr" class="mt-1 text-sm font-semibold">—</p>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">Calories</p>
+          <p id="previewCalories" class="mt-1 text-sm font-semibold">—</p>
+        </div>
+      </div>
+
+      <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+        <p class="text-xs text-[var(--muted)]">Macros</p>
+        <p id="previewMacros" class="mt-1 text-sm font-semibold leading-6">—</p>
+      </div>
+
+      <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+        <p class="text-xs text-[var(--muted)]">Profile summary</p>
+        <p id="previewProfile" class="mt-1 text-sm font-semibold leading-6">Fill the form to see the live target block.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const session = window.userSession || (window.userSession = {});
+  const steps = [...document.querySelectorAll(".step-btn")];
+  const painButtons = [...document.querySelectorAll(".pain-btn")];
+  const form = document.getElementById("auth-form");
+  const prevStepBtn = document.getElementById("prevStep");
+
+  const fields = {
+    Name: document.getElementById("Name"),
+    Gender: document.getElementById("Gender"),
+    Age: document.getElementById("Age"),
+    Height: document.getElementById("Height"),
+    Weight: document.getElementById("Weight"),
+    TrainingExperience: document.getElementById("TrainingExperience"),
+    NutritionGoal: document.getElementById("NutritionGoal"),
+    AvailableEquipment: document.getElementById("AvailableEquipment"),
+  };
+
+  const previewStep = document.getElementById("previewStep");
+  const previewBmr = document.getElementById("previewBmr");
+  const previewCalories = document.getElementById("previewCalories");
+  const previewMacros = document.getElementById("previewMacros");
+  const previewProfile = document.getElementById("previewProfile");
+
+  let currentStep = 1;
+  let currentPain = "None";
+
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function setStep(step) {
+    currentStep = clamp(step, 1, 3);
+    previewStep.textContent = `${currentStep} of 3`;
+    steps.forEach((btn) => btn.classList.toggle("is-active", Number(btn.dataset.step) === currentStep));
+    document.querySelectorAll(".step-panel").forEach((panel, index) => panel.classList.toggle("hidden", index !== currentStep - 1));
+    prevStepBtn.disabled = currentStep === 1;
+  }
+
+  function setPain(pain) {
+    currentPain = pain;
+    painButtons.forEach((btn) => btn.classList.toggle("is-active", btn.dataset.pain === pain));
+  }
+
+  function calcProfile() {
+    const Name = fields.Name.value.trim() || "Athlete";
+    const Gender = fields.Gender.value;
+    const Age = Number(fields.Age.value || 28);
+    const Height = Number(fields.Height.value || 178);
+    const Weight = Number(fields.Weight.value || 72);
+    const TrainingExperience = fields.TrainingExperience.value;
+    const NutritionGoal = fields.NutritionGoal.value;
+    const AvailableEquipment = fields.AvailableEquipment.value;
+    const ActivityMultiplier = window.HPOSIntel.defaultActivityMultiplier(TrainingExperience);
+
+    const { bmr, bmi, effectiveWeight } = window.HPOSIntel.computeBMR({ Name, Gender, Age, Height, Weight });
+    const targetWeight = bmi >= 30 ? effectiveWeight : Weight;
+    const nutrition = window.HPOSIntel.computeNutritionTargets({ Name, Gender, Age, Height, Weight, NutritionGoal, ActivityMultiplier }, ActivityMultiplier);
+    const targetProtein = targetWeight * nutrition.proteinFactor;
+
+    return {
+      userId: "current",
+      Name,
+      Age,
+      Height,
+      Weight,
+      Gender,
+      NutritionGoal,
+      ActivityMultiplier,
+      TrainingExperience,
+      PhysicalPainPatterns: currentPain,
+      AvailableEquipment,
+      BMR: bmr,
+      BMI: bmi,
+      DailyCalorieTarget: nutrition.dailyTarget,
+      TargetProtein: targetProtein,
+      TargetFats: nutrition.targetFats,
+      TargetCarbs: nutrition.targetCarbs,
+      GraceTokens: session.profile?.GraceTokens ?? 2,
+      LastProgressionReviewAt: session.profile?.LastProgressionReviewAt || null,
+      LastWorkoutAt: session.profile?.LastWorkoutAt || null,
+      NextMicrocycleMultiplier: session.profile?.NextMicrocycleMultiplier || 1,
+      updatedAt: Date.now(),
+    };
+  }
+
+  function updatePreview() {
+    const p = calcProfile();
+    previewBmr.textContent = Math.round(p.BMR);
+    previewCalories.textContent = Math.round(p.DailyCalorieTarget);
+    previewMacros.textContent = `Protein ${Math.round(p.TargetProtein)}g • Fat ${Math.round(p.TargetFats)}g • Carbs ${Math.round(p.TargetCarbs)}g`;
+    previewProfile.textContent = [
+      p.Name,
+      p.Gender,
+      `${p.Age}y`,
+      `${p.Height}cm`,
+      `${p.Weight}kg`,
+      p.TrainingExperience,
+      p.AvailableEquipment,
+      `Pain: ${p.PhysicalPainPatterns}`,
+    ].join(" • ");
+  }
+
+  steps.forEach((btn) => btn.addEventListener("click", () => setStep(Number(btn.dataset.step))));
+  painButtons.forEach((btn) => btn.addEventListener("click", () => setPain(btn.dataset.pain)));
+  prevStepBtn.addEventListener("click", () => setStep(currentStep - 1));
+
+  Object.values(fields).forEach((input) => {
+    input.addEventListener("input", updatePreview);
+    input.addEventListener("change", updatePreview);
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const profile = calcProfile();
+    await window.db.put("userProfiles", profile);
+
+    const targets = window.HPOSIntel.computeNutritionTargets(profile, profile.ActivityMultiplier);
+    await window.db.put("calorieLogs", {
+      date: new Date().toISOString().slice(0, 10),
+      DailyCalorieTarget: targets.dailyTarget,
+      LoggedCalories: 0,
+      TargetProtein: profile.TargetProtein,
+      LoggedProtein: 0,
+      LoggedCarbs: 0,
+      LoggedFats: 0,
+      ListOfLoggedMeals: [],
+      updatedAt: Date.now(),
+    });
+
+    session.authenticated = true;
+    session.profile = profile;
+    session.rttScore = 0;
+    session.dailyCalories = profile.DailyCalorieTarget;
+    localStorage.setItem("hpos_session", JSON.stringify(session));
+    window.saveUserSession?.();
+    window.HPOSHaptics?.success();
+
+    await window.router.navigate("dashboard");
+  });
+
+  updatePreview();
+  setStep(1);
+  setPain("None");
+
+  window.addEventListener("hpos:view-mounted", (event) => {
+    if (event.detail?.route === "auth") updatePreview();
+  });
+})();
+                                                               </script>          </div>
         </div>
       </div>
 
