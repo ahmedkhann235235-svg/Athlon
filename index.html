@@ -31,10 +31,38 @@ body{
 .nav{
   position:fixed;
   bottom:0;
+  left:0;              /* FIXED: prevents misalignment */
   width:100%;
   background:var(--card);
   display:flex;
   justify-content:space-around;
+  padding:12px;
+}
+button{
+  background:none;
+  border:none;
+  color:white;
+}
+</style>
+</head>
+
+<body>
+
+<div id="app">Loading...</div>
+
+<div class="nav">
+  <!-- FIXED: guard against router not being defined if scripts fail to load -->
+  <button onclick="typeof router !== 'undefined' && router.go('dashboard')">Dashboard</button>
+  <button onclick="typeof router !== 'undefined' && router.go('workout')">Workout</button>
+  <button onclick="typeof router !== 'undefined' && router.go('chatbot')">AI</button>
+  <button onclick="typeof router !== 'undefined' && router.go('settings')">Settings</button>
+</div>
+
+<script src="router.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>  justify-content:space-around;
   padding:12px;
 }
 button{
