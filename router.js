@@ -1,40 +1,43 @@
-(() => {
-  const VIEW_MAP = {
-    auth: "auth.html",
-    dashboard: "dashboard.html",
-    workout: "workout.html",
-    chatbot: "chatbot.html",
-    settings: "settings.html",
-    profile: "settings.html",
-  };
+const cache = {};
 
-  const cache = (window.__hposViewCache = window.__hposViewCache || Object.create(null));
-  const loading = (window.__hposViewLoading = window.__hposViewLoading || Object.create(null));
+window.userSession = {
+  authenticated: false,
+  rttScore: 0,
+  dailyCalories: 0
+};
 
-  const session = (window.userSession = window.userSession || {
-    authenticated: false,
-    profile: null,
-    rttScore: 0,
-    dailyCalories: 0,
-    theme: "dark",
-    lastRoute: "auth",
-  });
+async function loadView(view){
+  const app = document.getElementById("app-canvas");
 
-  const appState = (window.appState = window.appState || {
-    userSession: session,
-    rttScore: 0,
-    dailyCalories: 0,
-    activeGoal: "",
-    activeView: "",
-    cache,
-  });
-
-  function saveSession() {
-    localStorage.setItem("hpos_session", JSON.stringify(session));
-    localStorage.setItem("hpos_theme", session.theme || "dark");
+  if(cache[view]){
+    app.innerHTML = cache[view];
+    return;
   }
 
-  function normalizeRoute(route) {
+  try {
+    const res = await fetch(`${view}.html`);
+    const html = await res.text();
+
+    cache[view] = html;
+    app.innerHTML = html;
+
+  } catch(e){
+    app.innerHTML = `<div style="padding:20px">Failed to load ${view}</div>`;
+  }
+}
+
+window.router = {
+  navigate: async (view) => {
+    if(view !== "auth" && !window.userSession.authenticated){
+      return loadView("auth");
+    }
+    await loadView(view);
+  }
+};
+
+window.addEventListener("DOMContentLoaded", () => {
+  router.navigate("auth");
+});  function normalizeRoute(route) {
     return String(route || "").trim().replace(/^#/, "").toLowerCase() || "dashboard";
   }
 
