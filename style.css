@@ -1,40 +1,209 @@
-/* Premium design tokens */
-:root{
-  --bg-light:#F9FAFB;
-  --bg-dark:#0A0D14;
-  --surface:#121824;
-  --text:#F9FAFB;
-  --accent:#7C3AED;
-  --green:#34D399;
-  --amber:#FBBF24;
-  --red:#F87171;
+/* =========================
+   HUMAN PERFORMANCE OS
+   PREMIUM DESIGN SYSTEM
+   ========================= */
+
+:root {
+  --bg: #0A0D14;
+  --surface: #121824;
+  --text: #F9FAFB;
+  --muted: rgba(249,250,251,0.65);
+  --accent: #A78BFA;
+
+  --green: #34D399;
+  --amber: #FBBF24;
+  --red: #F87171;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+
+  --shadow: 0 10px 30px rgba(0,0,0,0.35);
 }
 
-/* Buttons */
-.nav-btn{
-  padding:14px;
-  min-height:56px;
-  border-radius:12px;
-  background: rgba(124,58,237,0.08);
-  transition: all 150ms cubic-bezier(0.16,1,0.3,1);
-  text-align:left;
-  font-weight:600;
+/* LIGHT MODE */
+.light {
+  --bg: #F9FAFB;
+  --surface: #FFFFFF;
+  --text: #111827;
+  --muted: rgba(17,24,39,0.6);
+  --accent: #7C3AED;
 }
 
-.nav-btn:hover{
-  transform: translateY(-1px);
-  background: rgba(124,58,237,0.15);
+/* BASE RESET */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
 }
 
-/* Cards */
-.card{
-  background:#fff;
-  border-radius:16px;
-  padding:16px;
+body {
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.25s ease, color 0.25s ease;
 }
 
-.dark .card{
-  background:#121824;
+/* APP CONTAINER */
+#app-canvas {
+  padding: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* CARDS */
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+/* TEXT STYLES */
+.h1 {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.h2 {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* BUTTON SYSTEM */
+.btn {
+  height: 56px;
+  border-radius: var(--radius-sm);
+  border: none;
+  width: 100%;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-danger {
+  background: var(--red);
+  color: white;
+}
+
+/* INPUTS */
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255,255,255,0.1);
+  background: transparent;
+  color: var(--text);
+}
+
+/* GRID HELPERS */
+.grid {
+  display: grid;
+  gap: 12px;
+}
+
+/* RADIAL / METRIC DISPLAY */
+.metric {
+  font-size: 42px;
+  font-weight: 800;
+}
+
+/* MOBILE BOTTOM NAV */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 72px;
+  background: var(--surface);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+/* DESKTOP SIDEBAR */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 240px;
+  padding: 16px;
+  background: var(--surface);
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+/* WORKOUT TABLE */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+td, th {
+  padding: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* CHECKBOX (GYM FRIENDLY) */
+input[type="checkbox"] {
+  transform: scale(1.6);
+  accent-color: var(--accent);
+}
+
+/* ANIMATIONS */
+@keyframes flash {
+  0% { background: var(--accent); }
+  100% { background: transparent; }
+}
+
+.flash {
+  animation: flash 0.15s ease;
+}
+
+/* CHAT LAYOUT */
+.chat-wrap {
+  display: flex;
+  height: calc(100vh - 120px);
+}
+
+.chat-log {
+  width: 35%;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.chat-main {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.chat-input {
+  position: fixed;
+  bottom: 72px;
+  left: 35%;
+  right: 0;
+  padding: 12px;
+  background: var(--surface);
+  border-top: 1px solid rgba(255,255,255,0.08);
+}  background:#121824;
 }
 
 /* Inputs */
