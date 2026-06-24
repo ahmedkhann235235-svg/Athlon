@@ -5,7 +5,107 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Athlon</title>
 
-<script src="https://cdn.tailwindcss.com"></script>
+<script>
+/* =========================
+   ATHLON STATE ENGINE
+========================= */
+
+const state = {
+  energy: 70,
+  fatigue: 30,
+  sleep: 7,
+  readiness: 0
+};
+
+/* Load saved state */
+const saved = localStorage.getItem("athlon_state");
+if (saved) {
+  Object.assign(state, JSON.parse(saved));
+}
+
+/* Save state */
+function saveState() {
+  localStorage.setItem("athlon_state", JSON.stringify(state));
+}
+
+/* =========================
+   READINESS CALCULATION
+========================= */
+
+function calculateReadiness() {
+  const sleepFactor = (state.sleep / 8) * 40;
+  const energyFactor = state.energy * 0.4;
+  const fatiguePenalty = state.fatigue * 0.6;
+
+  let score = sleepFactor + energyFactor - fatiguePenalty;
+
+  state.readiness = Math.max(0, Math.min(100, Math.round(score)));
+
+  saveState();
+}
+
+/* =========================
+   STATUS
+========================= */
+
+function getStatus(score) {
+  if (score >= 70) return { label: "Ready", color: "var(--green)" };
+  if (score >= 40) return { label: "Moderate", color: "var(--amber)" };
+  return { label: "Overtrained", color: "var(--red)" };
+}
+
+/* =========================
+   DASHBOARD UI UPDATE
+========================= */
+
+function renderDashboard() {
+  const el = document.getElementById("dashboard");
+  const status = getStatus(state.readiness);
+
+  el.innerHTML = `
+    <h2>Dashboard</h2>
+
+    <div style="padding:16px;background:var(--surface);border-radius:16px;margin-top:12px;">
+      <p style="color:var(--muted);font-size:12px;">Readiness-to-Train</p>
+      <h1 style="font-size:40px;margin:10px 0;">${state.readiness}</h1>
+      <p style="color:${status.color};font-weight:600;">${status.label}</p>
+    </div>
+
+    <div style="margin-top:12px;color:var(--muted);font-size:13px;">
+      Energy: ${state.energy}<br/>
+      Fatigue: ${state.fatigue}<br/>
+      Sleep: ${state.sleep}h
+    </div>
+  `;
+}
+
+/* =========================
+   SIMULATION (auto change)
+========================= */
+
+function simulate() {
+  state.energy = Math.max(0, Math.min(100, state.energy + (Math.random()*10 - 5)));
+  state.fatigue = Math.max(0, Math.min(100, state.fatigue + (Math.random()*10 - 3)));
+  state.sleep = Math.max(4, Math.min(9, state.sleep + (Math.random()*2 - 1)));
+
+  calculateReadiness();
+  renderDashboard();
+}
+
+/* =========================
+   START APP
+========================= */
+
+function init() {
+  calculateReadiness();
+  renderDashboard();
+}
+
+init();
+
+/* updates every 5 seconds (demo effect) */
+setInterval(simulate, 5000);
+</script>
 
 <style>
 /* =========================
