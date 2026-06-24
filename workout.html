@@ -1,0 +1,210 @@
+<section class="max-w-6xl mx-auto grid gap-4">
+  <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+    <div class="flex items-start justify-between gap-4 flex-wrap">
+      <div>
+        <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Zero-latency exercise grid</p>
+        <h2 class="mt-2 text-3xl font-black tracking-tight">Workout Mode</h2>
+        <p class="mt-2 text-sm text-[var(--muted)]">The sequence updates from today’s RTT zone and stays clean enough for fast gym-floor logging.</p>
+      </div>
+
+      <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 min-w-[160px]">
+        <p class="text-xs text-[var(--muted)]">Stopwatch</p>
+        <p id="workoutTimer" class="mt-1 text-3xl font-black tracking-tight">00:00</p>
+      </div>
+    </div>
+
+    <div id="zoneSummary" class="mt-5 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+      <p class="text-xs text-[var(--muted)]">Recovery zone</p>
+      <p id="zoneSummaryText" class="mt-1 text-sm font-semibold">—</p>
+    </div>
+  </div>
+
+  <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+    <div class="flex items-center justify-between gap-3 flex-wrap">
+      <div>
+        <h3 class="text-lg font-bold tracking-tight">Exercise sequence</h3>
+        <p class="mt-1 text-sm text-[var(--muted)]">Tap the checkbox when a set is complete. A crisp success flash confirms the log instantly.</p>
+      </div>
+      <div class="rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 py-2 text-sm font-bold" id="sequenceLabel">—</div>
+    </div>
+
+    <div class="mt-4 overflow-x-auto">
+      <table class="w-full border-separate border-spacing-y-3">
+        <thead>
+          <tr class="text-left text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
+            <th class="py-2 px-2">Exercise</th>
+            <th class="py-2 px-2">Set #</th>
+            <th class="py-2 px-2">Target Weight</th>
+            <th class="py-2 px-2">Target Rep Range</th>
+            <th class="py-2 px-2">Completed</th>
+          </tr>
+        </thead>
+        <tbody id="exerciseTable"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<style>
+  .set-row.flash {
+    animation: setFlash 150ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes setFlash {
+    0% { transform: scale(1); background: var(--surface); }
+    50% { transform: scale(0.995); background: color-mix(in srgb, var(--green) 12%, var(--surface)); }
+    100% { transform: scale(1); background: var(--surface); }
+  }
+</style>
+
+<script>
+(() => {
+  const session = window.userSession || (window.userSession = {});
+  session.workout = session.workout || {
+    completedSets: {},
+    stopwatchStartedAt: null,
+    lastWorkoutZone: "yellow",
+  };
+
+  const table = document.getElementById("exerciseTable");
+  const timer = document.getElementById("workoutTimer");
+  const zoneSummary = document.getElementById("zoneSummaryText");
+  const sequenceLabel = document.getElementById("sequenceLabel");
+  const timerKey = "athlon_workout_started_at_v1";
+
+  const zone = resolveZone(Number(session.rttScore || 0));
+  const sequence = buildSequence(zone.key);
+
+  zoneSummary.textContent = zone.text;
+  sequenceLabel.textContent = zone.sequenceName;
+
+  if (!session.workout.stopwatchStartedAt) {
+    const existing = Number(localStorage.getItem(timerKey) || 0);
+    session.workout.stopwatchStartedAt = existing || Date.now();
+    localStorage.setItem(timerKey, String(session.workout.stopwatchStartedAt));
+  }
+
+  function resolveZone(score) {
+    if (score >= 85) {
+      return {
+        key: "green",
+        color: "var(--green)",
+        text: "+15% Volume Hypertrophy Plan",
+        sequenceName: "Progressive Hypertrophy",
+      };
+    }
+    if (score >= 60) {
+      return {
+        key: "yellow",
+        color: "var(--amber)",
+        text: "Deload -20% Set Management",
+        sequenceName: "Controlled Volume",
+      };
+    }
+    return {
+      key: "red",
+      color: "var(--red)",
+      text: "Somatic Mobility / Active Rest",
+      sequenceName: "Recovery Movement",
+    };
+  }
+
+  function buildSequence(zoneKey) {
+    const weight = Number(session.profile?.weightKg || 72);
+
+    if (zoneKey === "green") {
+      return [
+        { exercise: "Barbell Back Squat", sets: 4, weight: Math.round(weight * 1.0), reps: "5-8" },
+        { exercise: "Barbell Bench Press", sets: 4, weight: Math.round(weight * 0.75), reps: "5-8" },
+        { exercise: "Chest-Supported Row", sets: 3, weight: Math.round(weight * 0.55), reps: "8-10" },
+        { exercise: "Romanian Deadlift", sets: 3, weight: Math.round(weight * 0.9), reps: "6-8" },
+      ];
+    }
+
+    if (zoneKey === "yellow") {
+      return [
+        { exercise: "Barbell Back Squat", sets: 3, weight: Math.round(weight * 0.85), reps: "6-8" },
+        { exercise: "Incline Dumbbell Press", sets: 3, weight: Math.round(weight * 0.35), reps: "8-10" },
+        { exercise: "Lat Pulldown", sets: 3, weight: Math.round(weight * 0.45), reps: "10-12" },
+      ];
+    }
+
+    return [
+      { exercise: "Crocodile Breathing", sets: 2, weight: 0, reps: "5 min" },
+      { exercise: "90/90 Hip Switches", sets: 2, weight: 0, reps: "8-10" },
+      { exercise: "Thoracic Rotation Flow", sets: 2, weight: 0, reps: "8-10" },
+      { exercise: "Zone 2 Walk / Bike", sets: 1, weight: 0, reps: "20-30 min" },
+    ];
+  }
+
+  function render() {
+    table.innerHTML = sequence.flatMap((item) => {
+      return Array.from({ length: item.sets }, (_, index) => {
+        const setNo = index + 1;
+        const key = `${item.exercise}-${setNo}`;
+        const completed = !!session.workout.completedSets[key];
+        return `
+          <tr class="set-row rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)]">
+            <td class="px-2 py-3">
+              <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3">
+                <p class="font-bold">${item.exercise}</p>
+              </div>
+            </td>
+            <td class="px-2 py-3">
+              <div class="min-h-[56px] rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 inline-flex items-center font-bold">${setNo}</div>
+            </td>
+            <td class="px-2 py-3">
+              <div class="min-h-[56px] rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 inline-flex items-center font-bold">${item.weight ? `${item.weight} kg` : "Recovery"}</div>
+            </td>
+            <td class="px-2 py-3">
+              <div class="min-h-[56px] rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 inline-flex items-center font-bold">${item.reps}</div>
+            </td>
+            <td class="px-2 py-3">
+              <button type="button" class="min-h-[56px] min-w-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 font-bold completed-toggle ${completed ? "is-complete" : ""}" data-key="${key}">
+                ${completed ? "✓" : "○"}
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }).join("");
+
+    table.querySelectorAll(".completed-toggle").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const key = btn.dataset.key;
+        session.workout.completedSets[key] = !session.workout.completedSets[key];
+
+        btn.textContent = session.workout.completedSets[key] ? "✓" : "○";
+        btn.classList.toggle("is-complete", session.workout.completedSets[key]);
+
+        const row = btn.closest(".set-row");
+        row?.classList.add("flash");
+        setTimeout(() => row?.classList.remove("flash"), 160);
+
+        window.saveUserSession?.();
+      });
+    });
+  }
+
+  function tickTimer() {
+    const started = Number(session.workout.stopwatchStartedAt || Date.now());
+    const elapsed = Math.max(0, Date.now() - started);
+    const totalSeconds = Math.floor(elapsed / 1000);
+    const mins = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+    const secs = String(totalSeconds % 60).padStart(2, "0");
+    timer.textContent = `${mins}:${secs}`;
+  }
+
+  render();
+  tickTimer();
+
+  if (window.__workoutTimer) clearInterval(window.__workoutTimer);
+  window.__workoutTimer = setInterval(tickTimer, 1000);
+
+  window.addEventListener("athlon:view-mounted", (event) => {
+    if (event.detail?.route === "workout") {
+      render();
+      tickTimer();
+    }
+  });
+})();
+          </script>
