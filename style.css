@@ -1,0 +1,63 @@
+/* Premium design tokens */
+:root{
+  --bg-light:#F9FAFB;
+  --bg-dark:#0A0D14;
+  --surface:#121824;
+  --text:#F9FAFB;
+  --accent:#7C3AED;
+  --green:#34D399;
+  --amber:#FBBF24;
+  --red:#F87171;
+}
+
+/* Buttons */
+.nav-btn{
+  padding:14px;
+  min-height:56px;
+  border-radius:12px;
+  background: rgba(124,58,237,0.08);
+  transition: all 150ms cubic-bezier(0.16,1,0.3,1);
+  text-align:left;
+  font-weight:600;
+}
+
+.nav-btn:hover{
+  transform: translateY(-1px);
+  background: rgba(124,58,237,0.15);
+}
+
+/* Cards */
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+}
+
+.dark .card{
+  background:#121824;
+}
+
+/* Inputs */
+input, select{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  min-height:56px;
+  background:#fff;
+}
+
+.dark input, .dark select{
+  background:#0A0D14;
+  color:white;
+  border:1px solid #1f2937;
+}
+
+/* CTA */
+.cta{
+  min-height:56px;
+  width:100%;
+  background:#7C3AED;
+  color:white;
+  border-radius:14px;
+  font-weight:700;
+}
