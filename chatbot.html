@@ -1,8 +1,27 @@
 <section class="max-w-7xl mx-auto rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] overflow-hidden min-h-[calc(100dvh-160px)] flex flex-col">
   <div class="border-b border-[var(--border)] bg-[var(--surface-2)] p-5 lg:p-6">
-    <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Integrated personal AI coach</p>
+    <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Context-aware local coach</p>
     <h2 class="mt-2 text-3xl font-black tracking-tight">Athlon Coach</h2>
-    <p class="mt-2 text-sm text-[var(--muted)]">A split-screen coaching layout with live context from your biometric and nutrition state.</p>
+    <p class="mt-2 text-sm text-[var(--muted)]">Rule-based NLP on-device with live hydration from recovery, nutrition, and workout state.</p>
+
+    <div class="mt-4 grid gap-3 md:grid-cols-4">
+      <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+        <p class="text-xs text-[var(--muted)]">RTT</p>
+        <p id="coachRtt" class="mt-1 text-2xl font-black">—</p>
+      </div>
+      <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+        <p class="text-xs text-[var(--muted)]">Goal</p>
+        <p id="coachGoal" class="mt-1 text-lg font-bold">—</p>
+      </div>
+      <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+        <p class="text-xs text-[var(--muted)]">Calories</p>
+        <p id="coachCalories" class="mt-1 text-lg font-bold">—</p>
+      </div>
+      <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+        <p class="text-xs text-[var(--muted)]">ACWR</p>
+        <p id="coachAcwr" class="mt-1 text-lg font-bold">—</p>
+      </div>
+    </div>
   </div>
 
   <div class="grid flex-1 lg:grid-cols-[320px_1fr] min-h-0">
@@ -19,22 +38,242 @@
       <div class="sticky bottom-0 border-t border-[var(--border)] bg-[var(--surface)] p-3 lg:p-4">
         <form id="chatForm" class="grid gap-3">
           <div class="grid gap-3 lg:grid-cols-[1fr_auto]">
-            <textarea id="chatInput" rows="2" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 outline-none resize-none focus:ring-4 focus:ring-[color-mix(in_srgb,var(--accent)_18%,transparent)]" placeholder="Ask about recovery, nutrition, today’s session, or load safety..."></textarea>
+            <textarea id="chatInput" rows="2" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 outline-none resize-none focus:ring-4 focus:ring-[color-mix(in_srgb,var(--accent)_18%,transparent)]" placeholder="Ask about pain, calories, recovery, or plateau blocks..."></textarea>
             <button type="submit" class="min-h-[56px] rounded-2xl bg-[var(--accent)] px-5 font-extrabold text-white shadow-[0_12px_24px_color-mix(in_srgb,var(--accent)_20%,transparent)]">
               Send
             </button>
           </div>
 
           <div class="flex flex-wrap gap-2">
-            <button type="button" class="min-h-[40px] rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 text-sm font-semibold quick-prompt" data-prompt="What should I train today?">Today’s session</button>
-            <button type="button" class="min-h-[40px] rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 text-sm font-semibold quick-prompt" data-prompt="Summarize my recovery and calories.">Recovery summary</button>
-            <button type="button" class="min-h-[40px] rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 text-sm font-semibold quick-prompt" data-prompt="Is my load safe?">Load safety</button>
+            <button type="button" class="min-h-[40px] rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 text-sm font-semibold quick-prompt" data-prompt="I have knee pain and my squat feels rough.">Pain help</button>
+            <button type="button" class="min-h-[40px] rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 text-sm font-semibold quick-prompt" data-prompt="What foods fit my calories today?">Food help</button>
+            <button type="button" class="min-h-[40px] rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 text-sm font-semibold quick-prompt" data-prompt="I feel stuck and heavy on my lifts.">Plateau help</button>
+            <button type="button" class="min-h-[40px] rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 text-sm font-semibold quick-prompt" data-prompt="I feel tired and low today.">Recovery help</button>
           </div>
         </form>
       </div>
     </section>
   </div>
 </section>
+
+<style>
+  .msg {
+    animation: fadeUp 180ms ease;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+
+<script>
+(() => {
+  const session = window.userSession || (window.userSession = {});
+  session.chat = session.chat || { history: [], messages: [] };
+
+  const feed = document.getElementById("chatFeed");
+  const historyList = document.getElementById("historyList");
+  const form = document.getElementById("chatForm");
+  const input = document.getElementById("chatInput");
+  const quickPrompts = [...document.querySelectorAll(".quick-prompt")];
+  const coachRtt = document.getElementById("coachRtt");
+  const coachGoal = document.getElementById("coachGoal");
+  const coachCalories = document.getElementById("coachCalories");
+  const coachAcwr = document.getElementById("coachAcwr");
+
+  const intentDB = {
+    injury: {
+      keywords: ["pain", "hurt", "knee", "back", "sore", "injury", "discomfort", "shoulder"],
+      note: "Joint-friendly substitutions and biomechanics.",
+    },
+    nutrition: {
+      keywords: ["cal", "diet", "food", "paneer", "roti", "curry", "carb", "protein", "rice", "dal"],
+      note: "Indian calories, macros, and meal suggestions.",
+    },
+    plateau: {
+      keywords: ["stuck", "heavy", "cannot", "fail", "hard", "plateau", "deload"],
+      note: "Progressive overload and deload guidance.",
+    },
+    recovery: {
+      keywords: ["hello", "hi", "tired", "rest", "lazy", "sleep", "fatigue", "recover"],
+      note: "RTT, Grace Tokens, and non-judgmental guidance.",
+    },
+    meta: {
+      futureResearchNote: "Keep this structure expandable for deeper database research and new user question classes.",
+    },
+  };
+
+  function safe(v) {
+    return String(v).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  }
+
+  function normalize(text) {
+    return String(text || "").toLowerCase().replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim();
+  }
+
+  function tokenize(text) {
+    return normalize(text).split(" ").filter(Boolean);
+  }
+
+  function detectIntent(text) {
+    const tokens = tokenize(text);
+    for (const [intent, rule] of Object.entries(intentDB)) {
+      if (!rule.keywords) continue;
+      if (rule.keywords.some((k) => tokens.includes(k))) return intent;
+    }
+    return "recovery";
+  }
+
+  async function hydrateContext() {
+    await window.db.ready;
+    const profile = await window.db.get("userProfiles", "current");
+    const today = new Date().toISOString().slice(0, 10);
+    const calorieLog = await window.db.get("calorieLogs", today);
+    const workouts = await window.db.getAll("workoutLogs");
+    const chats = await window.db.getAll("chatHistory");
+
+    const biometrics = {
+      hrv: profile?.LastHRV ?? 62,
+      sleepHours: profile?.LastSleepHours ?? 8,
+      rhr: profile?.LastRHR ?? 60,
+    };
+
+    const intel = window.HPOSIntel.getCurrentIntelligence(profile, calorieLog, workouts, biometrics);
+
+    return {
+      profile,
+      calorieLog,
+      recentWorkout: workouts.slice(-5).reverse(),
+      chats,
+      rtt: intel.rtt.rtt,
+      dailyCalories: intel.nutrition.dailyTarget,
+      goal: profile?.NutritionGoal || "Performance Maintenance",
+      grace: Number(profile?.GraceTokens ?? 2),
+      loadAnalytics: intel.loadAnalytics,
+      periodization: intel.periodization,
+      biometrics,
+    };
+  }
+
+  function greeting(ctx) {
+    const name = ctx.profile?.Name || "Athlete";
+    return `Hello ${name}. I’m synced to your ${String(ctx.goal).toLowerCase()} target and today’s calorie target is ${Math.round(ctx.dailyCalories || 0)} kcal. Ask about recovery, Indian foods, plateaus, or pain-aware substitutions.`;
+  }
+
+  function renderMeta(ctx) {
+    coachRtt.textContent = Math.round(ctx.rtt || 0);
+    coachGoal.textContent = String(ctx.goal || "—");
+    coachCalories.textContent = `${Math.round(ctx.dailyCalories || 0)} kcal`;
+    coachAcwr.textContent = Number(ctx.loadAnalytics?.acwr || 0).toFixed(2);
+  }
+
+  function renderHistory(ctx) {
+    const list = ctx.chats.slice(-12).reverse();
+    historyList.innerHTML = list.length
+      ? list.map((item) => `
+          <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3 msg">
+            <p class="text-xs text-[var(--muted)]">${safe(item.intent || item.role || "message")}</p>
+            <p class="mt-1 text-sm font-semibold leading-6">${safe(item.text || "")}</p>
+          </div>
+        `).join("")
+      : `<div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3 text-sm text-[var(--muted)]">No history yet.</div>`;
+  }
+
+  function renderFeed() {
+    const messages = session.chat.messages || [];
+    feed.innerHTML = messages.map((m) => `
+      <div class="flex ${m.role === "user" ? "justify-end" : "justify-start"} msg">
+        <div class="max-w-[92%] rounded-2xl border border-[var(--border)] px-4 py-3 text-sm leading-6 ${m.role === "user" ? "bg-[color-mix(in_srgb,var(--accent)_10%,var(--surface))]" : "bg-[var(--surface)]"}">
+          ${safe(m.text)}
+        </div>
+      </div>
+    `).join("");
+    feed.scrollTop = feed.scrollHeight;
+  }
+
+  async function addChat(record) {
+    await window.db.put("chatHistory", record);
+    session.chat.messages.push(record);
+    if (session.chat.messages.length > 50) session.chat.messages = session.chat.messages.slice(-50);
+    localStorage.setItem("hpos_session", JSON.stringify(session));
+  }
+
+  async function submitMessage(text) {
+    const ctx = await hydrateContext();
+    const intent = detectIntent(text);
+
+    await addChat({ role: "user", text, intent, createdAt: Date.now() });
+    renderFeed();
+    renderHistory(ctx);
+
+    const reply = window.HPOSIntel.coachReply({ intent, ctx, text });
+
+    setTimeout(async () => {
+      await addChat({ role: "ai", text: reply, intent, createdAt: Date.now() });
+      const nextCtx = await hydrateContext();
+      renderMeta(nextCtx);
+      renderFeed();
+      renderHistory(nextCtx);
+    }, 90);
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = "";
+    await submitMessage(text);
+  });
+
+  quickPrompts.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      input.value = btn.dataset.prompt || "";
+      input.focus();
+    });
+  });
+
+  const dbUpdateHandler = async (event) => {
+    if (["userProfiles", "calorieLogs", "workoutLogs", "chatHistory"].includes(event.detail?.store)) {
+      const ctx = await hydrateContext();
+      renderMeta(ctx);
+      renderHistory(ctx);
+      renderFeed();
+    }
+  };
+
+  if (window.__hposChatDbHandler) {
+    window.removeEventListener("hpos:db-updated", window.__hposChatDbHandler);
+  }
+  window.__hposChatDbHandler = dbUpdateHandler;
+  window.addEventListener("hpos:db-updated", dbUpdateHandler);
+
+  (async () => {
+    const ctx = await hydrateContext();
+    renderMeta(ctx);
+    renderHistory(ctx);
+    renderFeed();
+
+    if (!session.chat.messages.length) {
+      const greetingText = greeting(ctx);
+      await addChat({ role: "ai", text: greetingText, intent: "recovery", createdAt: Date.now() });
+      const nextCtx = await hydrateContext();
+      renderMeta(nextCtx);
+      renderFeed();
+      renderHistory(nextCtx);
+    }
+  })();
+
+  window.addEventListener("hpos:view-mounted", async (event) => {
+    if (event.detail?.route === "chatbot") {
+      const ctx = await hydrateContext();
+      renderMeta(ctx);
+      renderHistory(ctx);
+      renderFeed();
+    }
+  });
+})();
+                         </script></section>
 
 <script>
 (() => {
