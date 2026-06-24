@@ -1,9 +1,207 @@
-<!doctype html>
-<html lang="en" data-theme="dark">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Human Performance OS</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Human Performance OS</title>
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { 
+  getAuth, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC5ks5cfVoBlAddM7G83gG_eAkEIRvv-4E",
+  authDomain: "aclon-789fb.firebaseapp.com",
+  projectId: "aclon-789fb",
+  storageBucket: "aclon-789fb.firebasestorage.app",
+  messagingSenderId: "686587611572",
+  appId: "1:686587611572:web:c4948cbda2bbb4848b4ae1"
+};
+
+window.firebaseApp = initializeApp(firebaseConfig);
+window.auth = getAuth(window.firebaseApp);
+window.db = getFirestore(window.firebaseApp);
+</script>
+
+<style>
+:root{
+  --bg:#0A0D14;
+  --card:#121824;
+  --text:#F9FAFB;
+  --accent:#A78BFA;
+}
+body{
+  margin:0;
+  font-family: Inter, system-ui;
+  background:var(--bg);
+  color:var(--text);
+}
+.nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  display:flex;
+  justify-content:space-around;
+  background:var(--card);
+  padding:12px;
+}
+button{
+  background:none;
+  border:none;
+  color:var(--text);
+}
+main{
+  padding-bottom:80px;
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- APP SHELL -->
+<main id="app-canvas"></main>
+
+<!-- BOTTOM NAV -->
+<div class="nav">
+  <button onclick="router.navigate('dashboard')">Dashboard</button>
+  <button onclick="router.navigate('workout')">Workout</button>
+  <button onclick="router.navigate('chatbot')">AI</button>
+  <button onclick="router.navigate('settings')">Settings</button>
+</div>
+
+<!-- ROUTER -->
+<script src="router.js"></script>
+
+<!-- INTELLIGENCE LAYER -->
+<script type="module">
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+window.userSession = {
+  authenticated: false,
+  user: null,
+  rttScore: 0,
+  dailyCalories: 0
+};
+
+onAuthStateChanged(window.auth, async (user) => {
+  if (user) {
+    window.userSession.authenticated = true;
+    window.userSession.user = user;
+    router.navigate("dashboard");
+  } else {
+    window.userSession.authenticated = false;
+    router.navigate("auth");
+  }
+});
+</script>
+
+</body>
+</html>import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { 
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC5ks5cfVoBlAddM7G83gG_eAkEIRvv-4E",
+  authDomain: "aclon-789fb.firebaseapp.com",
+  projectId: "aclon-789fb",
+  storageBucket: "aclon-789fb.firebasestorage.app",
+  messagingSenderId: "686587611572",
+  appId: "1:686587611572:web:c4948cbda2bbb4848b4ae1"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// STATE
+let isLogin = true;
+
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const authBtn = document.getElementById("authBtn");
+const status = document.getElementById("status");
+
+// TAB SWITCH
+document.getElementById("loginTab").onclick = () => {
+  isLogin = true;
+  authBtn.innerText = "Login";
+};
+
+document.getElementById("signupTab").onclick = () => {
+  isLogin = false;
+  authBtn.innerText = "Create Account";
+};
+
+// AUTH ACTION
+authBtn.onclick = async () => {
+  status.innerText = "Processing...";
+
+  try {
+    let userCredential;
+
+    if (isLogin) {
+      userCredential = await signInWithEmailAndPassword(
+        auth,
+        email.value,
+        password.value
+      );
+    } else {
+      userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email.value,
+        password.value
+      );
+
+      // CREATE INITIAL FIRESTORE PROFILE
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        email: email.value,
+        level: 1,
+        xp: 0,
+        streak: 0,
+        createdAt: Date.now()
+      });
+    }
+
+    status.innerText = "Success! Loading...";
+
+    window.location.href = "dashboard.html";
+
+  } catch (err) {
+    status.innerText = err.message;
+  }
+};
+
+// AUTO LOGIN CHECK
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    window.location.href = "dashboard.html";
+  }
+});
+</script>
+
+</body>
+</html> Performance OS</title>
   <meta name="color-scheme" content="light dark" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
