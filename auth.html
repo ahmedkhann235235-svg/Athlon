@@ -1,40 +1,46 @@
-<section class="max-w-6xl mx-auto grid lg:grid-cols-[1.1fr_.9fr] gap-4">
-  <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
-    <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Quiet luxury onboarding</p>
-    <h2 class="mt-2 text-3xl font-black tracking-tight text-[var(--text)]">Create your profile</h2>
-    <p class="mt-2 text-sm text-[var(--muted)] max-w-xl">
-      A multi-step setup that captures the exact data needed for calories, recovery, and adaptive training.
-    </p>
+<script type="module">
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
-    <div class="mt-5 grid grid-cols-3 gap-2" id="auth-steps">
-      <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] font-bold text-sm step-btn is-active" data-step="1">Name & Gender</button>
-      <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-bold text-sm step-btn" data-step="2">Body Metrics</button>
-      <button type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] font-bold text-sm step-btn" data-step="3">Goals & Limits</button>
-    </div>
+import {
+  doc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-    <form id="auth-form" class="mt-5 space-y-4">
-      <div id="step-1" class="step-panel space-y-4">
-        <div class="grid gap-4 lg:grid-cols-2">
-          <label class="grid gap-2">
-            <span class="text-xs text-[var(--muted)]">Name</span>
-            <input id="Name" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none focus:ring-4 focus:ring-[color-mix(in_srgb,var(--accent)_18%,transparent)]" placeholder="Alex" />
-          </label>
-          <label class="grid gap-2">
-            <span class="text-xs text-[var(--muted)]">Gender</span>
-            <select id="Gender" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none">
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-          </label>
-        </div>
-      </div>
+const auth = window.auth;
+const db = window.db;
 
-      <div id="step-2" class="step-panel hidden space-y-4">
-        <div class="grid gap-4 lg:grid-cols-3">
-          <label class="grid gap-2">
-            <span class="text-xs text-[var(--muted)]">Age</span>
-            <input id="Age" type="number" min="10" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" value="28" />
-          </label>
+/* SIGN UP */
+window.signupUser = async function(email, password, profile){
+  const cred = await createUserWithEmailAndPassword(auth, email, password);
+
+  await setDoc(doc(db, "users", cred.user.uid), {
+    ...profile,
+    createdAt: Date.now(),
+    progress: {
+      workouts: [],
+      calories: 0
+    }
+  });
+
+  window.userSession.user = cred.user;
+  window.userSession.authenticated = true;
+
+  router.navigate("dashboard");
+};
+
+/* LOGIN */
+window.loginUser = async function(email, password){
+  const cred = await signInWithEmailAndPassword(auth, email, password);
+
+  window.userSession.user = cred.user;
+  window.userSession.authenticated = true;
+
+  router.navigate("dashboard");
+};
+</script>          </label>
           <label class="grid gap-2">
             <span class="text-xs text-[var(--muted)]">Height (cm)</span>
             <input id="Height" type="number" min="100" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" value="178" />
