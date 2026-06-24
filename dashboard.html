@@ -1,22 +1,22 @@
-<section class="max-w-6xl mx-auto grid gap-4">
-  <div class="grid gap-4 xl:grid-cols-[1.2fr_.8fr]">
+<section class="max-w-7xl mx-auto grid gap-4">
+  <div class="grid gap-4 xl:grid-cols-[1.15fr_.85fr]">
     <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
-      <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Biometric telemetry center</p>
+      <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Telemetry dashboard</p>
       <div class="mt-2 flex items-end justify-between gap-4 flex-wrap">
         <div>
-          <h2 class="text-3xl font-black tracking-tight">Recovery Dashboard</h2>
-          <p class="mt-2 text-sm text-[var(--muted)]">Calorie targets, recovery zones, and readiness update live with every input.</p>
+          <h2 class="text-3xl font-black tracking-tight">Human Performance OS</h2>
+          <p class="mt-2 text-sm text-[var(--muted)]">BMR, calories, recovery, and Indian nutrition logging update in real time.</p>
         </div>
-        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 min-w-[180px]">
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 min-w-[190px]">
           <p class="text-xs text-[var(--muted)]">Active goal</p>
           <p id="activeGoalText" class="mt-1 text-sm font-bold">—</p>
         </div>
       </div>
 
-      <div class="mt-5 grid gap-4 lg:grid-cols-3">
+      <div class="mt-5 grid gap-4 lg:grid-cols-4">
         <label class="grid gap-2">
           <span class="text-xs text-[var(--muted)]">Activity multiplier</span>
-          <select id="activityMultiplier" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none">
+          <select id="ActivityMultiplier" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none">
             <option value="1.2">Sedentary (1.2)</option>
             <option value="1.375">Light (1.375)</option>
             <option value="1.55" selected>Moderate (1.55)</option>
@@ -25,16 +25,360 @@
         </label>
 
         <label class="grid gap-2">
-          <span class="text-xs text-[var(--muted)]">HRV (last night)</span>
-          <input id="hrvInput" type="number" min="1" step="0.1" value="62" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" />
+          <span class="text-xs text-[var(--muted)]">HRV</span>
+          <input id="HRV" type="number" min="1" step="0.1" value="62" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" />
         </label>
 
         <label class="grid gap-2">
-          <span class="text-xs text-[var(--muted)]">RHR (resting heart rate)</span>
-          <input id="rhrInput" type="number" min="20" step="1" value="60" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" />
+          <span class="text-xs text-[var(--muted)]">Sleep (hours)</span>
+          <input id="SleepHours" type="number" min="0" step="0.1" value="8" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" />
+        </label>
+
+        <label class="grid gap-2">
+          <span class="text-xs text-[var(--muted)]">RHR</span>
+          <input id="RHR" type="number" min="20" step="1" value="60" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" />
         </label>
       </div>
 
+      <div class="mt-5 grid gap-4 md:grid-cols-4">
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">BMR</p>
+          <p id="BMRValue" class="mt-1 text-2xl font-black tracking-tight">—</p>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">TDEE</p>
+          <p id="TDEEValue" class="mt-1 text-2xl font-black tracking-tight">—</p>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">Goal calories</p>
+          <p id="GoalCaloriesValue" class="mt-1 text-2xl font-black tracking-tight">—</p>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">RTT</p>
+          <p id="RTTValue" class="mt-1 text-2xl font-black tracking-tight">—</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h3 class="text-lg font-bold tracking-tight">Recovery zone</h3>
+          <p id="zoneLabel" class="mt-1 text-sm text-[var(--muted)]">—</p>
+        </div>
+        <div id="zoneBadge" class="min-h-[40px] rounded-full px-4 inline-flex items-center font-bold text-sm border border-[var(--border)]">—</div>
+      </div>
+
+      <div class="mt-5 grid place-items-center">
+        <svg viewBox="0 0 120 120" class="w-[240px] max-w-full">
+          <defs>
+            <filter id="ringGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="0" stdDeviation="4" flood-color="currentColor" flood-opacity=".28"></feDropShadow>
+            </filter>
+          </defs>
+          <circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-opacity=".12" stroke-width="10"></circle>
+          <circle id="ringProgress" cx="60" cy="60" r="46" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="289.027" stroke-dashoffset="289.027" filter="url(#ringGlow)"></circle>
+          <text id="ringValue" x="60" y="64" text-anchor="middle" class="fill-[var(--text)]" style="font-size:30px;font-weight:900;letter-spacing:-0.05em;">—</text>
+          <text x="60" y="80" text-anchor="middle" class="fill-[var(--muted)]" style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;">RTT</text>
+        </svg>
+      </div>
+
+      <div class="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+        <p id="zonePlan" class="text-sm font-semibold leading-6">—</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-4 xl:grid-cols-[1fr_1fr]">
+    <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h3 class="text-lg font-bold tracking-tight">Intelligence layer</h3>
+          <p class="mt-1 text-sm text-[var(--muted)]">Autoregulation, ACWR, and next-session guidance.</p>
+        </div>
+        <div class="rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 py-2 text-sm font-bold" id="periodizationBadge">—</div>
+      </div>
+
+      <div class="mt-4 grid gap-3 md:grid-cols-3">
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">ACWR</p>
+          <p id="acwrValue" class="mt-1 text-2xl font-black tracking-tight">—</p>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">Mode</p>
+          <p id="periodizationValue" class="mt-1 text-lg font-bold">—</p>
+        </div>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">Next focus</p>
+          <p id="microcycleValue" class="mt-1 text-lg font-bold">—</p>
+        </div>
+      </div>
+
+      <div class="mt-4 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+        <p class="text-xs text-[var(--muted)]">Load guidance</p>
+        <p id="loadGuidance" class="mt-1 text-sm font-semibold leading-6">—</p>
+      </div>
+
+      <div class="mt-4 grid grid-cols-4 gap-2">
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3">
+          <p class="text-xs text-[var(--muted)]">Risk</p>
+          <p id="riskValue" class="mt-1 font-bold">—</p>
+        </div>
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3">
+          <p class="text-xs text-[var(--muted)]">Recent 7d</p>
+          <p id="acuteValue" class="mt-1 font-bold">—</p>
+        </div>
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3">
+          <p class="text-xs text-[var(--muted)]">Recent 28d</p>
+          <p id="chronicValue" class="mt-1 font-bold">—</p>
+        </div>
+        <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3">
+          <p class="text-xs text-[var(--muted)]">Protein</p>
+          <p id="proteinSummaryValue" class="mt-1 font-bold">—</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+      <h3 class="text-lg font-bold tracking-tight">Indian Calorie Tracker</h3>
+      <p class="mt-1 text-sm text-[var(--muted)]">Search, adjust portions, and log meals into today’s calorie timeline.</p>
+
+      <div class="mt-4 grid gap-3 lg:grid-cols-[1fr_170px]">
+        <label class="grid gap-2">
+          <span class="text-xs text-[var(--muted)]">Search food</span>
+          <input id="foodSearch" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 outline-none" placeholder="Paneer, roti, dal..." />
+        </label>
+        <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+          <p class="text-xs text-[var(--muted)]">Remaining calories</p>
+          <p id="remainingCalories" class="mt-1 text-2xl font-black tracking-tight">—</p>
+        </div>
+      </div>
+
+      <div class="mt-4 grid gap-3" id="foodList"></div>
+    </div>
+  </div>
+
+  <div class="grid gap-4 xl:grid-cols-[1fr_1fr]">
+    <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+      <h3 class="text-lg font-bold tracking-tight">Nutrient rings</h3>
+      <p class="mt-1 text-sm text-[var(--muted)]">Daily calories and macros update instantly when meals are added.</p>
+
+      <div class="mt-4 grid gap-4 md:grid-cols-2">
+        <div class="grid place-items-center">
+          <svg viewBox="0 0 120 120" class="w-[220px] max-w-full">
+            <circle cx="60" cy="60" r="46" fill="none" stroke="currentColor" stroke-opacity=".12" stroke-width="10"></circle>
+            <circle id="calorieRing" cx="60" cy="60" r="46" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" transform="rotate(-90 60 60)" stroke-dasharray="289.027" stroke-dashoffset="289.027"></circle>
+            <text id="calorieRingValue" x="60" y="64" text-anchor="middle" class="fill-[var(--text)]" style="font-size:26px;font-weight:900;letter-spacing:-0.05em;">—</text>
+            <text x="60" y="80" text-anchor="middle" class="fill-[var(--muted)]" style="font-size:9px;letter-spacing:.12em;text-transform:uppercase;">Calories</text>
+          </svg>
+        </div>
+
+        <div class="grid gap-3">
+          <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+            <p class="text-xs text-[var(--muted)]">Protein</p>
+            <p id="proteinSummary" class="mt-1 text-lg font-bold">—</p>
+          </div>
+          <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+            <p class="text-xs text-[var(--muted)]">Carbs</p>
+            <p id="carbSummary" class="mt-1 text-lg font-bold">—</p>
+          </div>
+          <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+            <p class="text-xs text-[var(--muted)]">Fats</p>
+            <p id="fatSummary" class="mt-1 text-lg font-bold">—</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
+        <h4 class="font-bold">Today’s food timeline</h4>
+        <div id="mealTimeline" class="mt-3 space-y-2"></div>
+      </div>
+    </div>
+
+    <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
+      <h3 class="text-lg font-bold tracking-tight">Load trend</h3>
+      <p class="mt-1 text-sm text-[var(--muted)]">The last 28 days of training load power the ACWR engine.</p>
+      <div id="loadChart" class="mt-4 grid grid-cols-14 gap-2 items-end min-h-[180px]"></div>
+    </div>
+  </div>
+</section>
+
+<script>
+(() => {
+  const FOODS = [
+    { name: "Phulka Roti", serving: "1 medium", calories: 80, protein: 3, carbs: 15, fats: 1 },
+    { name: "Cooked White Rice", serving: "1 bowl / 150g", calories: 205, protein: 4.3, carbs: 45, fats: 0.4 },
+    { name: "Cooked Dal Tadka", serving: "1 bowl", calories: 150, protein: 7, carbs: 20, fats: 4 },
+    { name: "Paneer Butter Masala", serving: "1 bowl", calories: 300, protein: 10, carbs: 10, fats: 22 },
+    { name: "Chicken Tikka", serving: "1 skewer / 100g", calories: 150, protein: 22, carbs: 2, fats: 5 },
+    { name: "Vegetable Poha", serving: "1 cup", calories: 180, protein: 4, carbs: 35, fats: 3 },
+    { name: "Idli", serving: "2 pieces", calories: 130, protein: 4, carbs: 27, fats: 0.4 },
+    { name: "Masala Dosa", serving: "1 medium", calories: 387, protein: 7, carbs: 77, fats: 5.6 },
+    { name: "Boiled Egg", serving: "1 whole", calories: 75, protein: 6, carbs: 0.6, fats: 5 },
+    { name: "Samosa", serving: "1 piece", calories: 150, protein: 5, carbs: 20, fats: 12 },
+  ];
+
+  const session = window.userSession || (window.userSession = {});
+  const today = new Date().toISOString().slice(0, 10);
+
+  const els = {
+    activeGoalText: document.getElementById("activeGoalText"),
+    ActivityMultiplier: document.getElementById("ActivityMultiplier"),
+    HRV: document.getElementById("HRV"),
+    SleepHours: document.getElementById("SleepHours"),
+    RHR: document.getElementById("RHR"),
+    BMRValue: document.getElementById("BMRValue"),
+    TDEEValue: document.getElementById("TDEEValue"),
+    GoalCaloriesValue: document.getElementById("GoalCaloriesValue"),
+    RTTValue: document.getElementById("RTTValue"),
+    zoneLabel: document.getElementById("zoneLabel"),
+    zoneBadge: document.getElementById("zoneBadge"),
+    zonePlan: document.getElementById("zonePlan"),
+    ringProgress: document.getElementById("ringProgress"),
+    ringValue: document.getElementById("ringValue"),
+    foodSearch: document.getElementById("foodSearch"),
+    foodList: document.getElementById("foodList"),
+    remainingCalories: document.getElementById("remainingCalories"),
+    calorieRing: document.getElementById("calorieRing"),
+    calorieRingValue: document.getElementById("calorieRingValue"),
+    proteinSummary: document.getElementById("proteinSummary"),
+    carbSummary: document.getElementById("carbSummary"),
+    fatSummary: document.getElementById("fatSummary"),
+    mealTimeline: document.getElementById("mealTimeline"),
+    acwrValue: document.getElementById("acwrValue"),
+    periodizationValue: document.getElementById("periodizationValue"),
+    microcycleValue: document.getElementById("microcycleValue"),
+    loadGuidance: document.getElementById("loadGuidance"),
+    riskValue: document.getElementById("riskValue"),
+    acuteValue: document.getElementById("acuteValue"),
+    chronicValue: document.getElementById("chronicValue"),
+    proteinSummaryValue: document.getElementById("proteinSummaryValue"),
+    periodizationBadge: document.getElementById("periodizationBadge"),
+  };
+
+  let profile = null;
+  let calorieLog = null;
+  let loadAnalytics = { acwr: 0, danger: false, acute: 0, chronic: 0, series: [] };
+
+  function clamp(n, min, max) {
+    return Math.max(min, Math.min(max, n));
+  }
+
+  function slug(v) {
+    return String(v).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
+
+  function zoneClass(color) {
+    if (color === "#34D399") return "glow-green";
+    if (color === "#FBBF24") return "glow-yellow";
+    return "glow-red";
+  }
+
+  async function load() {
+    await window.db.ready;
+    profile = await window.db.get("userProfiles", "current");
+    if (!profile) return;
+
+    els.activeGoalText.textContent = profile.NutritionGoal || "Performance Maintenance";
+    els.ActivityMultiplier.value = String(profile.ActivityMultiplier || 1.55);
+    els.HRV.value = Number(profile.LastHRV ?? 62);
+    els.SleepHours.value = Number(profile.LastSleepHours ?? 8);
+    els.RHR.value = Number(profile.LastRHR ?? 60);
+
+    calorieLog = await window.db.get("calorieLogs", today);
+    if (!calorieLog) {
+      const nutrition = window.HPOSIntel.computeNutritionTargets(profile, profile.ActivityMultiplier || 1.55);
+      calorieLog = await window.db.put("calorieLogs", {
+        date: today,
+        DailyCalorieTarget: nutrition.dailyTarget,
+        LoggedCalories: 0,
+        TargetProtein: nutrition.targetProtein,
+        LoggedProtein: 0,
+        LoggedCarbs: 0,
+        LoggedFats: 0,
+        ListOfLoggedMeals: [],
+        updatedAt: Date.now(),
+      });
+    }
+
+    await renderAll();
+  }
+
+  async function saveProfilePatch(patch = {}) {
+    profile = { ...profile, ...patch, updatedAt: Date.now() };
+    await window.db.put("userProfiles", profile);
+    window.saveUserSession?.();
+  }
+
+  function getCurrentIntelligence() {
+    const biometrics = {
+      hrv: Number(els.HRV.value || 62),
+      sleepHours: Number(els.SleepHours.value || 8),
+      rhr: Number(els.RHR.value || 60),
+    };
+    const rtt = window.HPOSIntel.computeRTT(biometrics);
+    const nutrition = window.HPOSIntel.computeNutritionTargets(profile, Number(els.ActivityMultiplier.value || profile.ActivityMultiplier || 1.55));
+    const workoutLogs = window.__hposWorkoutSnapshot || [];
+    const load = window.HPOSIntel.computeLoadAnalytics(workoutLogs);
+    const periodization = window.HPOSIntel.buildPeriodization(profile, rtt.rtt, load);
+    const zone = rtt.zone;
+    return { biometrics, rtt, nutrition, load, periodization, zone };
+  }
+
+  function updateShellState(intel) {
+    session.rttScore = intel.rtt.rtt;
+    session.dailyCalories = intel.nutrition.dailyTarget;
+    session.profile = profile;
+    session.profile.LastHRV = intel.biometrics.hrv;
+    session.profile.LastSleepHours = intel.biometrics.sleepHours;
+    session.profile.LastRHR = intel.biometrics.rhr;
+    session.profile.CurrentRTT = intel.rtt.rtt;
+    session.profile.ActivityMultiplier = Number(els.ActivityMultiplier.value);
+    window.appState.rttScore = intel.rtt.rtt;
+    window.appState.dailyCalories = intel.nutrition.dailyTarget;
+    window.appState.activeGoal = profile.NutritionGoal || "";
+    localStorage.setItem("hpos_session", JSON.stringify(session));
+  }
+
+  function renderRecovery(intel) {
+    const { rtt, zone } = intel;
+    els.BMRValue.textContent = Math.round(intel.nutrition.bmr);
+    els.TDEEValue.textContent = Math.round(intel.nutrition.tdee);
+    els.GoalCaloriesValue.textContent = Math.round(intel.nutrition.dailyTarget);
+    els.RTTValue.textContent = Math.round(rtt.rtt);
+    els.zoneLabel.textContent = zone.label;
+    els.zoneBadge.textContent = zone.badge;
+    els.zoneBadge.style.color = zone.color;
+    els.zoneBadge.style.borderColor = zone.color;
+    els.zoneBadge.style.background = `color-mix(in srgb, ${zone.color} 12%, var(--surface))`;
+    els.zonePlan.textContent = zone.summary;
+    els.ringValue.textContent = Math.round(rtt.rtt);
+    els.ringProgress.style.stroke = zone.color;
+    els.ringProgress.classList.remove("glow-green", "glow-yellow", "glow-red");
+    els.ringProgress.classList.add(zoneClass(zone.color));
+    const circumference = 289.027;
+    const offset = circumference * (1 - (rtt.rtt / 100));
+    els.ringProgress.setAttribute("stroke-dasharray", `${circumference}`);
+    els.ringProgress.setAttribute("stroke-dashoffset", `${offset}`);
+  }
+
+  function renderIntelligence(intel) {
+    els.acwrValue.textContent = intel.load.acwr ? intel.load.acwr.toFixed(2) : "0.00";
+    els.periodizationValue.textContent = intel.periodization.mode;
+    els.microcycleValue.textContent = intel.periodization.microcycle;
+    els.loadGuidance.textContent = intel.periodization.note;
+    els.periodizationBadge.textContent = intel.periodization.mode;
+    els.riskValue.textContent = intel.load.danger ? "Danger" : intel.zone.key === "red" ? "High" : intel.zone.key === "amber" ? "Moderate" : "Low";
+    els.acuteValue.textContent = Math.round(intel.load.acute || 0);
+    els.chronicValue.textContent = Math.round(intel.load.chronic || 0);
+    els.proteinSummaryValue.textContent = `${Math.round(intel.nutrition.targetProtein)}g`;
+  }
+
+  function updateRings(intel) {
+    const target = intel.nutrition.dailyTarget;
+    const logged = Number(calorieLog?.LoggedCalories || 0);
+    const remaining = Math.max(0, target - logged);
+    const pct = target > 0 ? clamp((logged / target) * 100, 0, 1
       <div class="mt-5 grid gap-4 md:grid-cols-4">
         <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-4">
           <p class="text-xs text-[var(--muted)]">BMR</p>
