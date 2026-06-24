@@ -1,40 +1,118 @@
+<style>
 /* =========================
    HUMAN PERFORMANCE OS
-   PREMIUM DESIGN SYSTEM
-   ========================= */
+   GLOBAL DESIGN SYSTEM
+========================= */
 
-:root {
-  --bg: #0A0D14;
-  --surface: #121824;
-  --text: #F9FAFB;
-  --muted: rgba(249,250,251,0.65);
-  --accent: #A78BFA;
-
-  --green: #34D399;
-  --amber: #FBBF24;
-  --red: #F87171;
-
-  --radius: 16px;
-  --radius-sm: 10px;
-
-  --shadow: 0 10px 30px rgba(0,0,0,0.35);
+:root{
+  --bg:#0A0D14;
+  --card:#121824;
+  --text:#F9FAFB;
+  --muted:#94A3B8;
+  --accent:#A78BFA;
+  --green:#34D399;
+  --red:#F87171;
+  --amber:#FBBF24;
 }
 
-/* LIGHT MODE */
-.light {
-  --bg: #F9FAFB;
-  --surface: #FFFFFF;
-  --text: #111827;
-  --muted: rgba(17,24,39,0.6);
-  --accent: #7C3AED;
+/* RESET */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-/* BASE RESET */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: Inter, system-ui, -apple-system, sans-serif;
+body{
+  font-family: Inter, system-ui, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* MAIN APP CONTAINER */
+#app, #app-canvas{
+  min-height:100vh;
+  width:100%;
+  padding:16px;
+  padding-bottom:90px;
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+
+/* HEADINGS */
+h1,h2,h3{
+  font-weight:600;
+  letter-spacing:-0.02em;
+}
+
+/* CARD SYSTEM */
+.card{
+  background:var(--card);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:14px;
+  padding:16px;
+}
+
+/* INPUT SYSTEM */
+input, select{
+  width:100%;
+  padding:12px;
+  margin-top:6px;
+  margin-bottom:12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:#0F1420;
+  color:var(--text);
+  outline:none;
+}
+
+/* BUTTON SYSTEM */
+button{
+  padding:12px 14px;
+  border-radius:12px;
+  border:none;
+  background:var(--accent);
+  color:white;
+  font-weight:500;
+  cursor:pointer;
+  transition:0.15s ease;
+}
+
+button:active{
+  transform:scale(0.98);
+}
+
+/* TABLE FIX */
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+td,th{
+  padding:12px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+
+/* NAV BAR */
+.nav{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:70px;
+  background:var(--card);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  border-top:1px solid rgba(255,255,255,0.08);
+}
+
+/* SAFE SCROLL */
+html,body{
+  overflow-x:hidden;
+}
+</style>  font-family: Inter, system-ui, -apple-system, sans-serif;
 }
 
 body {
