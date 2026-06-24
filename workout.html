@@ -1,31 +1,37 @@
-<section class="max-w-6xl mx-auto grid gap-4">
+<section class="max-w-7xl mx-auto grid gap-4 pb-28">
   <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
     <div class="flex items-start justify-between gap-4 flex-wrap">
       <div>
-        <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Zero-latency exercise grid</p>
-        <h2 class="mt-2 text-3xl font-black tracking-tight">Workout Mode</h2>
-        <p class="mt-2 text-sm text-[var(--muted)]">The sequence updates from today’s RTT zone and stays clean enough for fast gym-floor logging.</p>
+        <p class="text-xs uppercase tracking-[0.18em] text-[var(--muted)]">Adaptive workout mode</p>
+        <h2 class="mt-2 text-3xl font-black tracking-tight">Workout Matrix</h2>
+        <p class="mt-2 text-sm text-[var(--muted)]">Training splits adapt to experience, pain zones, and equipment access in real time.</p>
       </div>
-
-      <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 min-w-[160px]">
+      <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 min-w-[160px]">
         <p class="text-xs text-[var(--muted)]">Stopwatch</p>
         <p id="workoutTimer" class="mt-1 text-3xl font-black tracking-tight">00:00</p>
       </div>
     </div>
 
-    <div id="zoneSummary" class="mt-5 rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
-      <p class="text-xs text-[var(--muted)]">Recovery zone</p>
-      <p id="zoneSummaryText" class="mt-1 text-sm font-semibold">—</p>
+    <div class="mt-5 grid gap-4 lg:grid-cols-[1fr_auto] items-start">
+      <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
+        <p class="text-xs text-[var(--muted)]">Current split</p>
+        <p id="splitLabel" class="mt-1 text-sm font-semibold">—</p>
+      </div>
+      <button id="surveyBtn" type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 font-extrabold">
+        Progression Review
+      </button>
     </div>
   </div>
 
   <div class="rounded-[24px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-5 lg:p-6">
     <div class="flex items-center justify-between gap-3 flex-wrap">
       <div>
-        <h3 class="text-lg font-bold tracking-tight">Exercise sequence</h3>
-        <p class="mt-1 text-sm text-[var(--muted)]">Tap the checkbox when a set is complete. A crisp success flash confirms the log instantly.</p>
+        <h3 class="text-lg font-bold tracking-tight">Active set grid</h3>
+        <p class="mt-1 text-sm text-[var(--muted)]">Checkboxes are large enough for sweaty hands and flash on completion.</p>
       </div>
-      <div class="rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-4 py-2 text-sm font-bold" id="sequenceLabel">—</div>
+      <button id="adaptBtn" type="button" class="min-h-[56px] rounded-2xl bg-[var(--accent)] px-5 font-extrabold text-white">
+        Adapt Exercise
+      </button>
     </div>
 
     <div class="mt-4 overflow-x-auto">
@@ -35,6 +41,389 @@
             <th class="py-2 px-2">Exercise</th>
             <th class="py-2 px-2">Set #</th>
             <th class="py-2 px-2">Target Weight</th>
+            <th class="py-2 px-2">Target Reps</th>
+            <th class="py-2 px-2">Done</th>
+          </tr>
+        </thead>
+        <tbody id="workoutTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="fixed left-0 right-0 bottom-0 z-40 border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--bg)_92%,transparent)] backdrop-blur-md p-3 pb-[calc(12px+env(safe-area-inset-bottom))]">
+    <div class="max-w-7xl mx-auto grid gap-3 lg:grid-cols-[1fr_1fr]">
+      <button id="finishWorkout" class="min-h-[56px] rounded-2xl bg-[var(--green)] px-4 font-extrabold text-[var(--bg)]">
+        Finish Workout
+      </button>
+      <div class="rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--muted)]">
+        Long-press Finish Workout for 1.5 seconds to commit the session.
+      </div>
+    </div>
+  </div>
+
+  <div id="adaptDrawer" class="fixed inset-x-0 bottom-0 z-50 translate-y-full transition-transform duration-150 ease-[cubic-bezier(0.16,1,0.3,1)]">
+    <div class="mx-auto max-w-2xl rounded-t-[28px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-4 lg:p-6">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h3 class="text-lg font-bold tracking-tight">Adapt Exercise</h3>
+          <p class="text-sm text-[var(--muted)]">Choose a safe adjustment for the active movement.</p>
+        </div>
+        <button id="closeDrawer" type="button" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] px-4 font-bold">Close</button>
+      </div>
+
+      <div class="mt-4 grid gap-3">
+        <button data-adapt="heavy" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] px-4 text-left font-bold">
+          Weight is too heavy
+          <span class="block text-xs font-normal text-[var(--muted)]">Reduce the target load by 10%.</span>
+        </button>
+        <button data-adapt="pain" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] px-4 text-left font-bold">
+          Joint discomfort / Pain
+          <span class="block text-xs font-normal text-[var(--muted)]">Run similarity scoring and swap the movement.</span>
+        </button>
+        <button data-adapt="busy" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] px-4 text-left font-bold">
+          Equipment busy
+          <span class="block text-xs font-normal text-[var(--muted)]">Swap to a dumbbell or bodyweight equivalent.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="surveyDrawer" class="fixed inset-x-0 bottom-0 z-50 translate-y-full transition-transform duration-150 ease-[cubic-bezier(0.16,1,0.3,1)]">
+    <div class="mx-auto max-w-2xl rounded-t-[28px] border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)] p-4 lg:p-6">
+      <h3 class="text-lg font-bold tracking-tight">Progression Review</h3>
+      <p class="mt-1 text-sm text-[var(--muted)]">How did your exercises feel last week? Are you ready to attempt exercises that were previously difficult?</p>
+
+      <div class="mt-4 grid gap-3">
+        <label class="grid gap-2">
+          <span class="text-xs text-[var(--muted)]">Difficulty</span>
+          <select id="surveyDifficulty" class="min-h-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] px-4 outline-none">
+            <option value="easy">Easier than expected</option>
+            <option value="ok" selected>About right</option>
+            <option value="hard">Hard / missed sets</option>
+          </select>
+        </label>
+        <label class="grid gap-2">
+          <span class="text-xs text-[var(--muted)]">Notes</span>
+          <textarea id="surveyNotes" rows="3" class="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 outline-none"></textarea>
+        </label>
+        <button id="saveSurvey" type="button" class="min-h-[56px] rounded-2xl bg-[var(--accent)] px-4 font-extrabold text-white">Save Review</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .set-row.flash {
+    animation: setFlash 150ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes setFlash {
+    0% { transform: scale(1); background: var(--surface); }
+    50% { transform: scale(.995); background: color-mix(in srgb, var(--green) 12%, var(--surface)); }
+    100% { transform: scale(1); background: var(--surface); }
+  }
+
+  .completion-btn.is-complete {
+    background: color-mix(in srgb, var(--green) 14%, var(--surface));
+    border-color: color-mix(in srgb, var(--green) 26%, var(--border));
+    color: var(--text);
+  }
+</style>
+
+<script>
+(() => {
+  const session = window.userSession || (window.userSession = {});
+  const timerEl = document.getElementById("workoutTimer");
+  const table = document.getElementById("workoutTable");
+  const splitLabel = document.getElementById("splitLabel");
+  const adaptBtn = document.getElementById("adaptBtn");
+  const adaptDrawer = document.getElementById("adaptDrawer");
+  const closeDrawer = document.getElementById("closeDrawer");
+  const surveyDrawer = document.getElementById("surveyDrawer");
+  const surveyBtn = document.getElementById("surveyBtn");
+  const saveSurvey = document.getElementById("saveSurvey");
+  const finishBtn = document.getElementById("finishWorkout");
+
+  let profile = null;
+  let workoutPlan = null;
+  let timerStartedAt = session.workout?.stopwatchStartedAt || Date.now();
+  let activeIndex = 0;
+  let finishHoldTimer = null;
+
+  function todayKey() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function daysSince(dateString) {
+    if (!dateString) return Infinity;
+    return Math.floor((Date.now() - new Date(dateString).getTime()) / 86400000);
+  }
+
+  function haptics() {
+    window.HPOSHaptics?.success();
+  }
+
+  async function loadProfile() {
+    await window.db.ready;
+    profile = await window.db.get("userProfiles", "current");
+    if (!profile) return;
+    session.profile = profile;
+    timerStartedAt = session.workout?.stopwatchStartedAt || Date.now();
+    if (!session.workout) session.workout = {};
+    session.workout.stopwatchStartedAt = timerStartedAt;
+    localStorage.setItem("hpos_session", JSON.stringify(session));
+  }
+
+  async function snapshotWorkouts() {
+    window.__hposWorkoutSnapshot = await window.db.getAll("workoutLogs");
+    return window.__hposWorkoutSnapshot;
+  }
+
+  function buildPlan() {
+    const rtt = Number(session.rttScore || profile?.CurrentRTT || 0);
+    const analytics = window.HPOSIntel.computeLoadAnalytics(window.__hposWorkoutSnapshot || []);
+    const plan = window.HPOSIntel.buildWorkoutPlan(profile, rtt, analytics);
+    workoutPlan = plan;
+    splitLabel.textContent = `${plan.label} • ${plan.microcycle}`;
+    return plan;
+  }
+
+  function renderTable() {
+    if (!workoutPlan) return;
+
+    table.innerHTML = workoutPlan.items.flatMap((item, exerciseIndex) => {
+      return Array.from({ length: item.sets }, (_, setIndex) => {
+        const setNo = setIndex + 1;
+        const key = `${exerciseIndex}-${setNo}`;
+        const completed = !!item.completed[setIndex];
+
+        return `
+          <tr class="set-row rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--shadow)]" data-row="${exerciseIndex}">
+            <td class="px-2 py-3">
+              <div class="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3">
+                <p class="font-bold">${item.exercise}</p>
+              </div>
+            </td>
+            <td class="px-2 py-3">
+              <button type="button" class="min-h-[56px] min-w-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 font-bold" data-set="${key}">
+                ${setNo}
+              </button>
+            </td>
+            <td class="px-2 py-3">
+              <div class="min-h-[56px] rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 inline-flex items-center font-bold">${item.targetWeight} kg</div>
+            </td>
+            <td class="px-2 py-3">
+              <div class="min-h-[56px] rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 inline-flex items-center font-bold">${item.targetReps}</div>
+            </td>
+            <td class="px-2 py-3">
+              <button type="button" class="min-h-[56px] min-w-[56px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 font-extrabold completion-btn ${completed ? "is-complete" : ""}" data-complete="${key}">
+                ${completed ? "✓" : "○"}
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }).join("");
+
+    table.querySelectorAll("[data-complete]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const [exerciseIndex, setIndex] = btn.dataset.complete.split("-").map(Number);
+        const row = workoutPlan.items[exerciseIndex];
+        if (!row) return;
+
+        row.completed[setIndex] = !row.completed[setIndex];
+        btn.textContent = row.completed[setIndex] ? "✓" : "○";
+        btn.classList.toggle("is-complete", row.completed[setIndex]);
+
+        const rowEl = btn.closest(".set-row");
+        rowEl?.classList.add("flash");
+        setTimeout(() => rowEl?.classList.remove("flash"), 160);
+
+        if (row.completed[setIndex]) haptics();
+      });
+    });
+
+    table.querySelectorAll("[data-set]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const [exerciseIndex] = btn.dataset.set.split("-").map(Number);
+        activeIndex = exerciseIndex;
+        pulseActiveRow();
+      });
+    });
+  }
+
+  function pulseActiveRow() {
+    const rows = [...document.querySelectorAll(".set-row")];
+    rows.forEach((row) => row.classList.remove("ring-2", "ring-[var(--accent)]"));
+    const selected = rows.find((row) => Number(row.dataset.row) === activeIndex);
+    selected?.classList.add("ring-2", "ring-[var(--accent)]");
+  }
+
+  function tick() {
+    const elapsed = Math.floor((Date.now() - timerStartedAt) / 1000);
+    const mins = String(Math.floor(elapsed / 60)).padStart(2, "0");
+    const secs = String(elapsed % 60).padStart(2, "0");
+    timerEl.textContent = `${mins}:${secs}`;
+  }
+
+  function openDrawer(drawer) {
+    drawer.classList.remove("translate-y-full");
+  }
+
+  function closeDrawerEl(drawer) {
+    drawer.classList.add("translate-y-full");
+  }
+
+  async function adaptCurrentExercise(type) {
+    if (!workoutPlan?.items?.length) return;
+    const row = workoutPlan.items[activeIndex];
+    if (!row) return;
+
+    if (type === "heavy") {
+      row.targetWeight = Math.max(1, Math.round(row.targetWeight * 0.9));
+    }
+
+    if (type === "pain") {
+      const substitute = window.HPOSIntel.findBestSubstitute(row.exercise, profile, "pain");
+      if (substitute && substitute !== row.exercise) {
+        row.exercise = substitute;
+        row.targetWeight = Math.round((profile?.Weight || 72) * 0.75);
+      }
+    }
+
+    if (type === "busy") {
+      const equipment = profile?.AvailableEquipment || "Full Gym";
+      const map = {
+        "Barbell Squat": equipment === "Bodyweight" ? "Air Squat" : "Goblet Squat",
+        "Bench Press": equipment === "Bodyweight" ? "Push-up" : "Dumbbell Bench Press",
+        "Romanian Deadlift": equipment === "Bodyweight" ? "Single-Leg Hip Hinge" : "DB RDL",
+        "Overhead Press": equipment === "Bodyweight" ? "Pike Push-up" : "Landmine Press",
+        "Lat Pulldown": equipment === "Bodyweight" ? "Inverted Row" : "1-Arm DB Row",
+        "Chest-Supported Row": equipment === "Bodyweight" ? "Inverted Row" : "1-Arm DB Row",
+      };
+      row.exercise = map[row.exercise] || row.exercise;
+    }
+
+    renderTable();
+    closeDrawerEl(adaptDrawer);
+    haptics();
+  }
+
+  function showSurveyIfDue() {
+    const due = daysSince(profile?.LastProgressionReviewAt) >= 7;
+    if (due) openDrawer(surveyDrawer);
+  }
+
+  async function saveSurveyResult() {
+    const difficulty = document.getElementById("surveyDifficulty").value;
+    const notes = document.getElementById("surveyNotes").value.trim();
+
+    profile.LastProgressionReviewAt = new Date().toISOString();
+    profile.ProgressionFeedback = { difficulty, notes };
+    profile.NextMicrocycleMultiplier = difficulty === "hard" ? 0.9 : difficulty === "easy" ? 1.05 : 1.0;
+    profile.updatedAt = Date.now();
+
+    await window.db.put("userProfiles", profile);
+    closeDrawerEl(surveyDrawer);
+    haptics();
+  }
+
+  async function finishWorkoutCommit() {
+    const completedSets = workoutPlan.items.flatMap((item) =>
+      item.completed.map((done, idx) => ({
+        exercise: item.exercise,
+        set: idx + 1,
+        done,
+        targetWeight: item.targetWeight,
+        targetReps: item.targetReps,
+      }))
+    );
+
+    const durationMin = Math.max(1, Math.round((Date.now() - timerStartedAt) / 60000));
+    const sessionRPE = 7;
+    const trainingStress = durationMin * sessionRPE;
+    const loadAnalytics = window.HPOSIntel.computeLoadAnalytics(window.__hposWorkoutSnapshot || []);
+
+    await window.db.put("workoutLogs", {
+      logId: `log_${Date.now()}`,
+      Date: todayKey(),
+      WorkoutFocus: workoutPlan.label,
+      CompletedSets: completedSets.filter((s) => s.done),
+      Duration: durationMin,
+      sRPE: sessionRPE,
+      TrainingStress: trainingStress,
+      ACWR: loadAnalytics.acwr,
+      updatedAt: Date.now(),
+    });
+
+    profile.LastWorkoutAt = new Date().toISOString();
+    profile.updatedAt = Date.now();
+    await window.db.put("userProfiles", profile);
+
+    window.HPOSHaptics?.success();
+    localStorage.setItem("hpos_session", JSON.stringify(session));
+    await window.router.navigate("dashboard");
+  }
+
+  function bindFinishHold() {
+    const start = () => {
+      clearTimeout(finishHoldTimer);
+      finishHoldTimer = setTimeout(async () => {
+        await finishWorkoutCommit();
+      }, 1500);
+    };
+
+    const end = () => clearTimeout(finishHoldTimer);
+
+    finishBtn.addEventListener("pointerdown", start);
+    finishBtn.addEventListener("pointerup", end);
+    finishBtn.addEventListener("pointerleave", end);
+    finishBtn.addEventListener("pointercancel", end);
+  }
+
+  async function init() {
+    await window.db.ready;
+    await loadProfile();
+    if (!profile) return;
+
+    await snapshotWorkouts();
+    buildPlan();
+    renderTable();
+    tick();
+
+    if (window.__hposWorkoutTimer) clearInterval(window.__hposWorkoutTimer);
+    window.__hposWorkoutTimer = setInterval(tick, 1000);
+
+    adaptBtn.addEventListener("click", () => openDrawer(adaptDrawer));
+    closeDrawer.addEventListener("click", () => closeDrawerEl(adaptDrawer));
+    surveyBtn.addEventListener("click", () => openDrawer(surveyDrawer));
+    saveSurvey.addEventListener("click", saveSurveyResult);
+
+    document.querySelectorAll("[data-adapt]").forEach((btn) => {
+      btn.addEventListener("click", () => adaptCurrentExercise(btn.dataset.adapt));
+    });
+
+    bindFinishHold();
+    showSurveyIfDue();
+    pulseActiveRow();
+  }
+
+  if (window.__hposWorkoutDbHandler) {
+    window.removeEventListener("hpos:db-updated", window.__hposWorkoutDbHandler);
+  }
+  window.__hposWorkoutDbHandler = async (event) => {
+    if (event.detail?.store === "userProfiles" || event.detail?.store === "workoutLogs") {
+      await init();
+    }
+  };
+  window.addEventListener("hpos:db-updated", window.__hposWorkoutDbHandler);
+
+  init();
+
+  window.addEventListener("hpos:view-mounted", (event) => {
+    if (event.detail?.route === "workout") init();
+  });
+})();
+    </script>            <th class="py-2 px-2">Target Weight</th>
             <th class="py-2 px-2">Target Rep Range</th>
             <th class="py-2 px-2">Completed</th>
           </tr>
