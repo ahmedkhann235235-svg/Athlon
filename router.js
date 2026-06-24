@@ -12,6 +12,9 @@ window.router = {
 
     try {
       const res = await fetch(page + ".html");
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`); // FIXED: catch non-2xx responses
+
       const html = await res.text();
 
       cache[page] = html;
@@ -27,14 +30,7 @@ window.router = {
 
 window.addEventListener("DOMContentLoaded", () => {
   router.go("dashboard");
-});
-window.addEventListener("DOMContentLoaded", () => {
-  router.navigate("auth");
-});  function normalizeRoute(route) {
-    return String(route || "").trim().replace(/^#/, "").toLowerCase() || "dashboard";
-  }
-
-  function guardRoute(route) {
+});  function guardRoute(route) {
     if (!session.authenticated && route !== "auth") return "auth";
     if (!VIEW_MAP[route]) return "dashboard";
     return route;
