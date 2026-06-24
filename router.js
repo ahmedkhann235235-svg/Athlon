@@ -1,40 +1,229 @@
-/* router.js */
 (() => {
   const VIEW_MAP = {
     auth: "auth.html",
-    profile: "auth.html",
     dashboard: "dashboard.html",
     workout: "workout.html",
     chatbot: "chatbot.html",
+    settings: "settings.html",
+    profile: "settings.html",
   };
 
-  const SESSION_KEY = "athlon_session_v2";
-  const THEME_KEY = "athlon_theme_v2";
+  const cache = (window.__hposViewCache = window.__hposViewCache || Object.create(null));
+  const loading = (window.__hposViewLoading = window.__hposViewLoading || Object.create(null));
 
-  const fallbackSession = {
+  const session = (window.userSession = window.userSession || {
     authenticated: false,
-    profile: {
-      name: "",
-      gender: "male",
-      age: 28,
-      heightCm: 178,
-      weightKg: 72,
-      goal: "maintenance",
-    },
-    biometrics: {
-      hrv: 62,
-      rhr: 60,
-    },
+    profile: null,
     rttScore: 0,
     dailyCalories: 0,
-    activityMultiplier: 1.55,
-    theme: "light",
-    workout: {
-      completedSets: {},
-      stopwatchStartedAt: null,
-      lastWorkoutZone: "yellow",
+    theme: "dark",
+    lastRoute: "auth",
+  });
+
+  const appState = (window.appState = window.appState || {
+    userSession: session,
+    rttScore: 0,
+    dailyCalories: 0,
+    activeGoal: "",
+    activeView: "",
+    cache,
+  });
+
+  function saveSession() {
+    localStorage.setItem("hpos_session", JSON.stringify(session));
+    localStorage.setItem("hpos_theme", session.theme || "dark");
+  }
+
+  function normalizeRoute(route) {
+    return String(route || "").trim().replace(/^#/, "").toLowerCase() || "dashboard";
+  }
+
+  function guardRoute(route) {
+    if (!session.authenticated && route !== "auth") return "auth";
+    if (!VIEW_MAP[route]) return "dashboard";
+    return route;
+  }
+
+  function extractFragment(text) {
+    const doc = new DOMParser().parseFromString(text, "text/html");
+    return doc.body ? doc.body.innerHTML : text;
+  }
+
+  function rehydrateScripts(root) {
+    const scripts = [...root.querySelectorAll("script")];
+    for (const oldScript of scripts) {
+      const newScript = document.createElement("script");
+      for (const attr of oldScript.attributes) newScript.setAttribute(attr.name, attr.value);
+      newScript.textContent = oldScript.textContent;
+      oldScript.replaceWith(newScript);
+    }
+  }
+
+  function highlightNav(route) {
+    document.querySelectorAll("[data-route]").forEach((el) => {
+      const target = el.dataset.route;
+      const active = target === route || (route === "settings" && target === "profile");
+      el.classList.toggle("is-active", active);
+      if (active) el.setAttribute("aria-current", "page");
+      else el.removeAttribute("aria-current");
+    });
+  }
+
+  async function mountRoute(route) {
+    const file = VIEW_MAP[route] || VIEW_MAP.dashboard;
+    const canvas = document.getElementById("app-canvas");
+    if (!canvas) return;
+
+    let html = cache[file];
+
+    if (!html) {
+      if (loading[file]) {
+        html = await loading[file];
+      } else {
+        loading[file] = fetch(file, { cache: "no-store" })
+          .then(async (res) => {
+            if (!res.ok) throw new Error(`Failed to fetch ${file}`);
+            const text = await res.text();
+            const fragment = extractFragment(text);
+            cache[file] = fragment;
+            return fragment;
+          })
+          .finally(() => {
+            delete loading[file];
+          });
+        html = await loading[file];
+      }
+    }
+
+    canvas.innerHTML = html;
+    rehydrateScripts(canvas);
+    appState.activeView = route;
+    window.dispatchEvent(new CustomEvent("hpos:view-mounted", { detail: { route } }));
+  }
+
+  async function prefetchViews() {
+    const routes = ["auth", "dashboard", "workout", "chatbot", "settings"];
+    await Promise.all(
+      routes.map(async (route) => {
+        const file = VIEW_MAP[route];
+        if (cache[file]) return;
+        try {
+          const res = await fetch(file, { cache: "no-store" });
+          if (!res.ok) return;
+          cache[file] = extractFragment(await res.text());
+        } catch {
+          // no-op
+        }
+      })
+    );
+  }
+
+  function bindGlobalNavigation() {
+    if (window.__hposNavBound) return;
+    window.__hposNavBound = true;
+
+    document.addEventListener("click", async (event) => {
+      const routeEl = event.target.closest("[data-route]");
+      const actionEl = event.target.closest("[data-action]");
+
+      if (actionEl && actionEl.dataset.action === "toggle-theme") {
+        event.preventDefault();
+        router.toggleTheme();
+        return;
+      }
+
+      if (!routeEl) return;
+
+      event.preventDefault();
+      const route = routeEl.dataset.route;
+      if (!route) return;
+      await router.navigate(route);
+    });
+  }
+
+  function bindPopState() {
+    if (window.__hposPopBound) return;
+    window.__hposPopBound = true;
+
+    window.addEventListener("popstate", async (event) => {
+      const route = guardRoute(normalizeRoute(event.state?.route || location.hash));
+      await mountRoute(route);
+      highlightNav(route);
+    });
+  }
+
+  const router = (window.router = window.router || {
+    cache,
+
+    async init() {
+      await window.db.ready;
+
+      const profile = await window.db.get("userProfiles", "current");
+      session.authenticated = !!profile;
+      session.profile = profile || null;
+      if (profile) appState.activeGoal = profile.NutritionGoal || profile.goal || "";
+
+      const savedTheme = localStorage.getItem("hpos_theme") || session.theme || "dark";
+      this.setTheme(savedTheme);
+
+      bindGlobalNavigation();
+      bindPopState();
+
+      const startRoute = profile ? "dashboard" : "auth";
+      await this.navigate(startRoute, { replace: true, skipHistory: true });
+      prefetchViews().catch(() => {});
     },
-    chat: {
+
+    async navigate(route, opts = {}) {
+      const normalized = normalizeRoute(route);
+      const guarded = guardRoute(normalized);
+
+      if (!opts.skipHistory) {
+        if (opts.replace) history.replaceState({ route: guarded }, "", `#${guarded}`);
+        else history.pushState({ route: guarded }, "", `#${guarded}`);
+      } else if (opts.replace) {
+        history.replaceState({ route: guarded }, "", `#${guarded}`);
+      }
+
+      session.lastRoute = guarded;
+      appState.activeView = guarded;
+      await mountRoute(guarded);
+      highlightNav(guarded);
+      saveSession();
+      return guarded;
+    },
+
+    setTheme(theme) {
+      const next = theme === "light" ? "light" : "dark";
+      session.theme = next;
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("hpos_theme", next);
+      saveSession();
+      return next;
+    },
+
+    toggleTheme() {
+      return this.setTheme(session.theme === "dark" ? "light" : "dark");
+    },
+
+    refreshSession(profile) {
+      session.profile = profile || null;
+      session.authenticated = !!profile;
+      if (profile) appState.activeGoal = profile.NutritionGoal || profile.goal || "";
+      saveSession();
+    },
+  });
+
+  window.saveUserSession = saveSession;
+
+  window.addEventListener("storage", (event) => {
+    if (event.key === "hpos_theme") router.setTheme(event.newValue || "dark");
+  });
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    await router.init();
+  });
+})();    chat: {
       history: [],
       messages: [],
     },
