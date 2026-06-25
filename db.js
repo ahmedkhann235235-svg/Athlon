@@ -1,40 +1,65 @@
-(() => {
-  const DB_NAME = "hpos_local_db";
-  const DB_VERSION = 1;
+const DB_NAME = "fitnessOS";
+const DB_VERSION = 1;
 
-  const STORE_DEFS = {
-    userProfiles: { keyPath: "userId" },
-    workoutLogs: { keyPath: "logId" },
-    calorieLogs: { keyPath: "date" },
-    chatHistory: { keyPath: "chatId", autoIncrement: true },
-  };
+let db;
 
-  const clone = (value) => JSON.parse(JSON.stringify(value));
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-  const memoryCache = {
-    userProfiles: new Map(),
-    workoutLogs: new Map(),
-    calorieLogs: new Map(),
-    chatHistory: new Map(),
-  };
+    request.onupgradeneeded = () => {
+      db = request.result;
 
-  let _db = null;
-  let _readyResolve;
-  let _readyReject;
-  const ready = new Promise((resolve, reject) => {
-    _readyResolve = resolve;
-    _readyReject = reject;
+      if (!db.objectStoreNames.contains("userProfiles")) {
+        db.createObjectStore("userProfiles", { keyPath: "userId" });
+      }
+      if (!db.objectStoreNames.contains("workoutLogs")) {
+        db.createObjectStore("workoutLogs", { keyPath: "logId" });
+      }
+      if (!db.objectStoreNames.contains("calorieLogs")) {
+        db.createObjectStore("calorieLogs", { keyPath: "date" });
+      }
+      if (!db.objectStoreNames.contains("chatHistory")) {
+        db.createObjectStore("chatHistory", { keyPath: "chatId", autoIncrement: true });
+      }
+    };
+
+    request.onsuccess = () => {
+      db = request.result;
+      resolve(db);
+    };
+
+    request.onerror = () => reject(request.error);
   });
+}
 
-  const todayKey = () => new Date().toISOString().slice(0, 10);
-  const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+function tx(store, mode = "readonly") {
+  return db.transaction(store, mode).objectStore(store);
+}
 
-  function isIOS() {
-    return /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  }
+export async function put(store, value) {
+  await openDB();
+  return new Promise(res => {
+    const req = tx(store, "readwrite").put(value);
+    req.onsuccess = () => res(true);
+  });
+}
 
-  function isAndroid() {
-    return /Android/i.test(navigator.userAgent);
+export async function get(store, key) {
+  await openDB();
+  return new Promise(res => {
+    const req = tx(store).get(key);
+    req.onsuccess = () => res(req.result);
+  });
+}
+
+export async function getAll(store) {
+  await openDB();
+  return new Promise(res => {
+    const req = tx(store).getAll();
+    req.onsuccess = () => res(req.result);
+  });
+}    return /Android/i.test(navigator.userAgent);
   }
 
   async function ensureBody() {
