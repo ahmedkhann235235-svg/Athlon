@@ -1,9 +1,50 @@
-<h1>Settings</h1>
+<section class="screen-grid fade-in">
+  <div class="panel">
+    <span class="eyebrow">System settings</span>
+    <h1 class="h2" style="margin-top:8px">Profile & system</h1>
+    <p class="p" style="margin-top:8px">
+      Theme controls, account session, and local data reset.
+    </p>
 
-<div class="card">
-  <p>Developed by Md Ahmed Khan</p>
+    <div class="field-grid" style="margin-top:18px">
+      <label class="field">
+        <span class="field-label">Theme selector</span>
+        <select id="theme-select">
+          <option value="dark">OLED Dark Mode</option>
+          <option value="light">Light Mode</option>
+        </select>
+      </label>
 
-  <p><b><i>
-    Consistency beats intensity. True health is built day-by-day.
-  </i></b></p>
-</div>
+      <button id="theme-toggle" class="btn btn-ghost" type="button">Toggle Theme</button>
+      <button id="sign-out" class="btn btn-ghost" type="button">Sign Out</button>
+      <button id="reset-db" class="btn btn-danger" type="button">Reset Local Database</button>
+    </div>
+
+    <div class="soft-panel" style="margin-top:18px;padding:16px">
+      <div class="eyebrow">Sync status</div>
+      <div id="sync-status" class="p" style="margin-top:6px">—</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="eyebrow">About App</div>
+    <h2 class="h2" style="margin-top:8px">Tribute panel</h2>
+
+    <div class="soft-panel" style="margin-top:16px;padding:16px">
+      <div class="p" style="font-weight:800">Developed by Md Ahmed Khan, a classmate student</div>
+    </div>
+
+    <div class="soft-panel" style="margin-top:12px;padding:16px">
+      <div class="p" style="font-weight:900;font-style:italic;line-height:1.8">
+        "Consistency beats intensity. True health is built day-by-day."
+      </div>
+    </div>
+
+    <div class="soft-panel" style="margin-top:12px;padding:16px">
+      <div class="eyebrow">Session note</div>
+      <div class="p" style="margin-top:6px">
+        Your settings page keeps the app consistent: theme, sign out, and local reset are all here.
+      </div>
+    </div>
+  </div>
+</section>
