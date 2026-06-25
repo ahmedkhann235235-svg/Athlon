@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="FitOS — a free, premium-style fitness operating system with training, nutrition, AI coaching, and personalized progress tracking." />
+  <title>FitOS</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --bg-soft: #111827;
+      --card: rgba(17, 24, 39, 0.78);
+      --card-solid: #111827;
+      --line: rgba(255,255,255,0.10);
+      --text: #f9fafb;
+      --muted: #94a3b8;
+      --accent: #8b5cf6;
+      --accent-2: #22c55e;
+      --warn: #f59e0b;
+      --danger: #ef4444;
+      --shadow: 0 24px 80px rgba(0,0,0,0.35);
+      --radius: 24px;
+      --radius-sm: 16px;
+      --max: 1180px;
+      --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(139,92,246,0.25), transparent 35%),
+        radial-gradient(circle at top right, rgba(34,197,94,0.18), transparent 28%),
+        linear-gradient(180deg, #050816 0%, #0b1020 38%, #090d18 100%);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      }
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea, select { font: inherit; }
+
+    .wrap { width: min(100% - 24px, var(--max)); margin: 0 auto; }
+    .glass {
+      background: var(--card);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(16px);
+      box-shadow: var(--shadow);
+    }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(5,8,22,0.72);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      }
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 12px 30px rgba(139,92,246,0.35);
+      font-weight: 900;
+    }
+
+    .nav {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .nav a { transition: color var(--transition), opacity var(--transition); }
+    .nav a:hover { color: var(--text); }
+
+    .hero {
+      padding: 56px 0 24px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .hero-main, .hero-side, .section-card, .panel {
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      background: rgba(17,24,39,0.78);
+      backdrop-filter: blur(14px);
+      box-shadow: var(--shadow);
+    }
+.hero-main { padding: 34px; }
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(139,92,246,0.14);
+      color: #ddd6fe;
+      font-size: 0.9rem;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 6vw, 4.8rem);
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+      max-width: 12ch;
+    }
+
+    .lede {
+      margin: 18px 0 0;
+      max-width: 62ch;
+      font-size: 1.05rem;
+      line-height: 1.75;
+      color: var(--muted);
+      }
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      min-height: 54px;
+      padding: 0 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: transform var(--transition), opacity var(--transition), background var(--transition);
+      font-weight: 700;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), #6366f1); color: white; }
+    .btn-secondary { background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,0.14); }
+    .btn-ghost { background: rgba(255,255,255,0.05); color: var(--text); }
+
+    .hero-side { padding: 22px; display: grid; gap: 14px; }
+    .stat {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .stat strong { display: block; font-size: 1.15rem; margin-bottom: 6px; }
+    .stat span { color: var(--muted); font-size: 0.95rem; line-height: 1.6; }
+
+    .grid-3, .grid-2 {
+      display: grid;
+      gap: 18px;
+    }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .section {
+      padding: 20px 0 0;
+    }
+
+    .section-card, .panel { padding: 22px; }
+      .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      letter-spacing: -0.03em;
+    }
+
+    .section-head p { margin: 0; color: var(--muted); max-width: 70ch; line-height: 1.65; }
+
+    .feature {
+      padding: 20px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      min-height: 180px;
+    }
+
+    .feature h3 { margin: 0 0 10px; font-size: 1.05rem; }
+    .feature p, .feature li { color: var(--muted); line-height: 1.7; }
+    .feature ul { margin: 12px 0 0; padding-left: 18px; }
+
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 0.88rem;
+    }
+
+    .pipeline {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    .pipeline-step {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      gap: 12px;
+      align-items: start;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .step-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(139,92,246,0.18);
+      color: #ddd6fe;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    .codebox {
+      background: #050816;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 18px;
+      padding: 18px;
+      color: #cbd5e1;
+      overflow: auto;
+      font-size: 0.86rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.85rem;
+    }
+    .badge.green { background: rgba(34,197,94,0.12); color: #86efac; }
+    .badge.yellow { background: rgba(245,158,11,0.12); color: #fde68a; }
+    .badge.red { background: rgba(239,68,68,0.12); color: #fca5a5; }
+
+    .footer {
+      padding: 34px 0 42px;
+      color: var(--muted);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+    }
+
+    .small { font-size: 0.92rem; line-height: 1.75; }
+
+    @media (max-width: 980px) {
+      .hero-grid, .grid-3, .grid-2, .footer-grid { grid-template-columns: 1fr; }
+      .section-head { flex-direction: column; align-items: start; }
+    }
+
+    @media (max-width: 640px) {
+      .hero-main, .hero-side, .section-card, .panel { padding: 18px; border-radius: 20px; }
+      .nav { gap: 10px; font-size: 0.88rem; justify-content: flex-start; }
+      h1 { max-width: 10ch; }
+      .btn { width: 100%; }
+      .cta-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#home" aria-label="FitOS home">
+        <span class="brand-mark">F</span>
+        <span>FitOS</span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a href="#blueprint">Blueprint</a>
+        <a href="#features">Features</a>
+        <a href="#coach">AI Coach</a>
+        <a href="#nutrition">Nutrition</a>
+        <a href="#about">About</a>
+        <a href="#support">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="home" class="wrap">
+    <section class="hero">
+      <div class="hero-grid">
+        <div class="hero-main">
+          <div class="kicker">Free fitness operating system • mobile-first • offline-ready</div>
+          <h1>Build the world’s best fitness website.</h1>
+          <p class="lede">
+            FitOS is designed as a complete training ecosystem: workout logging, Indian calorie tracking,
+            adaptive plans, recovery scoring, AI coaching, progress analytics, and account-based data storage.
+            The interface should feel fast on every device, clean under pressure, and deep enough to grow into a serious product.
+          </p>
+          <div class="cta-row">
+            <button class="btn btn-primary">Start with signup flow</button>
+            <button class="btn btn-secondary">Open blueprint</button>
+            <button class="btn btn-ghost">Preview dashboard</button>
+          </div>
+          <div class="pill-row" aria-label="Core promises">
+            <span class="pill">Fast on low-end phones</span>
+            <span class="pill">Personalized routines</span>
+            <span class="pill">Huge food database</span>
+            <span class="pill">Progressive overload</span>
+            <span class="pill">Account-based storage</span>
+          </div>
+        </div>
+
+        <aside class="hero-side">
+          <div class="stat">
+            <strong>1. Recovery-aware training</strong>
+            <span>Daily readiness can reshape volume, intensity, and exercise selection instead of forcing one rigid plan.</span>
+          </div>
+          <div class="stat">
+            <strong>2. Indian food intelligence</strong>
+            <span>Log a meal, match it to the closest foods in the database, and calculate calories plus macros.</span>
+          </div>
+          <div class="stat">
+            <strong>3. Smart chatbot layer</strong>
+            <span>The coach should understand the user’s issue, search the knowledge base, and answer with context.</span>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section id="blueprint" class="section">
+      <div class="section-card">
+        <div class="section-head">
+          <div>
+            <h2>Blueprint</h2>
+            <p>A realistic product map for a premium fitness platform that stays free for users and still feels complete.</p>
+          </div>
+          <span class="badge green">Mobile-first architecture</span>
+        </div>
+
+        <div class="grid-3">
+          <article class="feature">
+            <h3>Foundation</h3>
+            <p>Use a clean front-end shell, Firebase auth, per-user data, and background sync so the app remains usable even when connectivity is weak.</p>
+            <ul>
+              <li>Login / signup</li>
+              <li>Saved profiles</li>
+              <li>Session persistence</li>
+              <li>Profile-based settings</li>
+            </ul>
+          </article>
+          <article class="feature">
+            <h3>Core modules</h3>
+            <p>Divide the app into dashboard, today’s plan, workout mode, nutrition log, progress analytics, and settings.</p>
+            <ul>
+              <li>Workout logging</li>
+              <li>Meal logging</li>
+              <li>Calories / macros</li>
+              <li>Progress reports</li>
+            </ul>
+          </article>
+          <article class="feature">
+            <h3>Smart engine</h3>
+            <p>Make the plan adapt automatically from readiness, missed sessions, injuries, and 21-day progress checks.</p>
+            <ul>
+              <li>RTT / recovery scoring</li>
+              <li>Exercise substitutions</li>
+              <li>Progressive overload</li>
+              <li>21-day review cycle</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="section-card">
+        <div class="section-head">
+          <div>
+            <h2>Feature set</h2>
+            <p>These are the product pillars that make the system feel like a true fitness OS instead of a simple tracker.</p>
+          </div>
+        </div>
+        <div class="grid-2">
+          <article class="panel">
+            <h3>Workout system</h3>
+            <div class="pipeline">
+              <div class="pipeline-step"><div class="step-dot">1</div><div>Custom onboarding asks about goals, experience, equipment, injuries, schedule, and preference.</div></div>
+              <div class="pipeline-step"><div class="step-dot">2</div><div>Workout page shows one focused exercise at a time, with set logging, rest timer, and swap options.</div></div>
+              <div class="pipeline-step"><div class="step-dot">3</div><div>A “can’t do this” button opens reasons like pain, fatigue, no equipment, bad form, or time shortage.</div></div>
+              <div class="pipeline-step"><div class="step-dot">4</div><div>The plan updates using substitutions and load scaling so the session stays realistic.</div></div>
+            </div>
+          </article>
+          <article class="panel">
+            <h3>Food and nutrition</h3>
+            <div class="pipeline">
+              <div class="pipeline-step"><div class="step-dot">1</div><div>Indian food database with rotis, rice, dals, paneer dishes, snacks, and common home meals.</div></div>
+              <div class="pipeline-step"><div class="step-dot">2</div><div>Meal search should match user text to the closest known food item and portion size.</div></div>
+              <div class="pipeline-step"><div class="step-dot">3</div><div>Show calories, protein, carbs, fat, and remaining daily targets in a simple ring or bar view.</div></div>
+              <div class="pipeline-step"><div class="step-dot">4</div><div>Add a food suggestion button that recommends items to help finish the day’s macro target.</div></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="coach" class="section">
+      <div class="section-card">
+        <div class="section-head">
+          <div>
+            <h2>AI coach layer</h2>
+            <p>The assistant should not be a tiny local FAQ bot. It should interpret the user’s message, find the right fitness or nutrition context, and answer clearly.</p>
+          </div>
+          <span class="badge yellow">Knowledge + retrieval</span>
+        </div>
+        <div class="grid-2">
+          <article class="panel">
+            <h3>How it should behave</h3>
+            <ul class="small">
+              <li>Read the user message, identify intent, and route it to fitness, nutrition, recovery, or account help.</li>
+              <li>Search a large structured knowledge base before generating a reply.</li>
+              <li>Return a direct answer, not vague generic advice.</li>
+              <li>Keep responses contextual to the user’s logged data and current plan.</li>
+            </ul>
+          </article>
+          <article class="panel">
+            <h3>Implementation note</h3>
+            <div class="codebox">Intent → retrieval → response
+
+1. Parse user issue
+2. Search relevant knowledge base entries
+3. Check user profile + recent logs
+4. Generate answer and action suggestion
+5. Save conversation state to the user account</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="nutrition" class="section">
+      <div class="section-card">
+        <div class="section-head">
+          <div>
+            <h2>Nutrition + database</h2>
+            <p>Your reports point toward a structured database design with user profiles, biometric logs, recovery states, workout logs, exercise logs, and nutrition logs.</p>
+          </div>
+          <span class="badge red">Per-user data isolation</span>
+        </div>
+        <div class="grid-2">
+          <article class="panel">
+            <h3>Data model</h3>
+            <div class="codebox">user_profiles
+biometric_logs
+user_exclusions
+recovery_states
+workout_logs
+exercise_logs
+nutrition_logs
+sync_outbox</div>
+          </article>
+          <article class="panel">
+            <h3>What to store</h3>
+            <ul class="small">
+              <li>Account info, goals, weight, height, and training level.</li>
+              <li>Sleep, fatigue, and recovery values for plan adaptation.</li>
+              <li>Exercise history with sets, reps, weight, and completion state.</li>
+              <li>Meal logs with matched food item, serving size, and macro totals.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section">
+      <div class="section-card">
+        <div class="section-head">
+          <div>
+            <h2>About FitOS</h2>
+            <p>This is the public story block for the website. It keeps the brand human, simple, and trustworthy.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <p class="small" style="margin-top:0;">
+            FitOS was developed by <strong>Ahmed Khan</strong> with a simple idea: fitness tools should not feel expensive, cluttered, or frustrating.
+            The project is built around a belief that a great fitness platform should help people start with confidence, stay consistent without guilt,
+            and make better decisions with less effort. The goal is to combine serious tracking, intelligent coaching, and a clean experience into one system.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="support" class="section">
+      <div class="section-card">
+        <div class="section-head">
+          <div>
+            <h2>Support</h2>
+            <p>Keep support visible and simple. Users should always know where to ask for help.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <p class="small" style="margin:0;">Contact support: <a href="mailto:ahmedkhann235235@gmail.com"><strong>ahmedkhann235235@gmail.com</strong></a></p>
+        </div>
+      </div>
+      </section>
+
+    <section id="support" class="section">
+      <div class="section-card">
+        <div class="section-head">
+          <div>
+            <h2>Support</h2>
+            <p>Keep support visible and simple. Users should always know where to ask for help.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <p class="small" style="margin:0;">Contact support: <a href="mailto:ahmedkhann235235@gmail.com"><strong>ahmedkhann235235@gmail.com</strong></a></p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-grid">
+        <div>
+          <strong style="color: var(--text);">FitOS</strong>
+          <p class="small">A free, premium-feeling fitness platform concept designed to grow into a full operating system for training, recovery, and food tracking.</p>
+        </div>
+        <div>
+          <p class="small">Next files to build: <strong>auth</strong>, <strong>dashboard</strong>, <strong>workout</strong>, <strong>nutrition</strong>, <strong>chatbot</strong>, <strong>settings</strong>.</p>
+        </div>
+      </div>
+    </footer>
+  </main>
+</body>
+</html>
+
+  
