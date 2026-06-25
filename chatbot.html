@@ -1,18 +1,45 @@
-<h1>AI Coach</h1>
+<section class="panel fade-in chat-shell">
+  <div class="panel" style="border-radius:28px 28px 0 0;border-bottom:1px solid var(--border);box-shadow:none;background:linear-gradient(180deg, rgba(167,139,250,.08), transparent 50%), var(--surface)">
+    <span class="eyebrow">Context-aware local coach</span>
+    <h1 class="h2" style="margin-top:8px">Athlon Coach</h1>
+    <p class="p" style="margin-top:8px;max-width:72ch">
+      The coach reads your current readiness, nutrition, recent workouts, and app state.
+      It is broad, specific, and built for fitness-first guidance.
+    </p>
 
-<div class="card" id="chat"></div>
+    <div class="metric-grid" style="margin-top:14px">
+      <div class="metric-card"><span>RTT</span><strong id="chat-rtt">—</strong></div>
+      <div class="metric-card"><span>Goal</span><strong id="chat-goal">—</strong></div>
+      <div class="metric-card"><span>Calories</span><strong id="chat-calories">—</strong></div>
+      <div class="metric-card"><span>ACWR</span><strong id="chat-acwr">—</strong></div>
+    </div>
+  </div>
 
-<input id="msg" placeholder="Ask...">
-<button onclick="send()">Send</button>
+  <div class="split-layout chat-main" style="flex:1">
+    <aside class="chat-side panel" style="box-shadow:none;border-radius:0;border-left:none;border-right:1px solid var(--border);border-top:none;border-bottom:none;padding:18px">
+      <div class="eyebrow">History</div>
+      <div id="chat-history" class="chat-history" style="margin-top:12px"></div>
+    </aside>
 
-<script>
-function send(){
-  const msg = document.getElementById("msg").value;
-  const chat = document.getElementById("chat");
+    <section class="chat-main panel" style="box-shadow:none;border-radius:0;border:none;background:transparent;padding:0">
+      <div id="chat-feed" class="chat-feed"></div>
 
-  const rtt = window.state.rtt;
+      <div class="chat-input-shell">
+        <form id="chat-form" class="chat-form">
+          <textarea id="chat-input" class="textarea" rows="2" placeholder="Ask about pain, calories, workouts, recovery, or app controls..."></textarea>
 
-  chat.innerHTML += `<p>You: ${msg}</p>`;
-  chat.innerHTML += `<p>Coach: Your RTT is ${rtt}. Adjust intensity.</p>`;
-}
-</script>
+          <div class="chat-shortcuts">
+            <button class="chip" data-chat-chip="I have knee pain and my squat feels rough." type="button">Pain help</button>
+            <button class="chip" data-chat-chip="What foods fit my calories today?" type="button">Food help</button>
+            <button class="chip" data-chat-chip="I feel stuck and heavy on my lifts." type="button">Plateau help</button>
+            <button class="chip" data-chat-chip="I feel tired and low today." type="button">Recovery help</button>
+            <button class="chip" data-chat-chip="What should I do in workout mode?" type="button">Workout help</button>
+            <button class="chip" data-chat-chip="How do I reset or change theme?" type="button">App help</button>
+          </div>
+
+          <button class="btn btn-primary" type="submit">Send</button>
+        </form>
+      </div>
+    </section>
+  </div>
+</section>
