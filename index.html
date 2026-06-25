@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Human Performance OS</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#0A0D14;
+      --card:#121824;
+      --text:#F9FAFB;
+      --accent:#A78BFA;
+    }
+
+    body{
+      font-family: Inter, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin:0;
+      overflow:hidden;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px;
+    }
+
+    .btn{
+      background: var(--accent);
+      color: black;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      width: 100%;
+    }
+
+    #app-canvas{
+      height: calc(100vh - 60px);
+      overflow:auto;
+      padding: 16px;
+    }
+
+    nav{
+      height: 60px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      display:flex;
+      justify-content:space-around;
+      align-items:center;
+      background: var(--card);
+      border-top: 1px solid rgba(255,255,255,0.08);
+    }
+
+    nav button{
+      background:none;
+      color:var(--text);
+      border:none;
+      font-size:12px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <main id="app-canvas"></main>
+
+  <nav>
+    <button data-route="dashboard">Dashboard</button>
+    <button data-route="workout">Workout</button>
+    <button data-route="chatbot">AI</button>
+    <button data-route="settings">Settings</button>
+  </nav>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-analytics.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyAoI5qOWRRsN0aEXcdeUdaTQYUN2CGj2DA",
+      authDomain: "fitness-app-5aa0d.firebaseapp.com",
+      projectId: "fitness-app-5aa0d",
+      storageBucket: "fitness-app-5aa0d.firebasestorage.app",
+      messagingSenderId: "660756865454",
+      appId: "1:660756865454:web:a48aa0629e402ca773e83f",
+      measurementId: "G-96QM6C2VVR"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
+
+  <script type="module" src="./router.js"></script>
+</body>
+</html>
