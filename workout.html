@@ -1,0 +1,90 @@
+<section class="screen-grid fade-in">
+  <div class="panel timer-card">
+    <div>
+      <span class="eyebrow">Workout mode</span>
+      <h1 class="h2" id="workout-hero-title">Workout Matrix</h1>
+      <p class="p" id="workout-hero-note" style="margin-top:8px">—</p>
+    </div>
+
+    <div class="timer-value" id="workout-timer">00:00</div>
+  </div>
+
+  <div class="panel">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Plan</span>
+        <h2 class="h2" id="workout-split">—</h2>
+        <div class="p" id="workout-note" style="margin-top:6px">—</div>
+      </div>
+      <div class="pill" id="workout-zone">—</div>
+    </div>
+
+    <div class="workout-list" id="workout-list"></div>
+
+    <div class="footer-bar">
+      <div class="footer-actions">
+        <button id="workout-adapt-btn" class="btn btn-ghost" type="button">Adapt Exercise</button>
+        <button id="workout-finish-btn" class="btn btn-success" type="button">Finish Workout</button>
+      </div>
+      <div class="soft-panel" style="padding:14px 16px;color:var(--muted)">
+        Long-press Finish Workout for 1.5 seconds.
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="workout-adapt-sheet" class="drawer">
+  <div class="drawer-overlay" data-close-drawer="workout-adapt-sheet"></div>
+  <div class="drawer-sheet">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Adaptation</span>
+        <h2 class="h2">Choose an adjustment</h2>
+      </div>
+      <button class="btn btn-ghost" id="workout-adapt-close" type="button">Close</button>
+    </div>
+
+    <div class="grid-3">
+      <button class="btn btn-ghost" data-adapt-action="heavy" type="button">
+        Weight is too heavy
+      </button>
+      <button class="btn btn-ghost" data-adapt-action="pain" type="button">
+        Joint discomfort / Pain
+      </button>
+      <button class="btn btn-ghost" data-adapt-action="busy" type="button">
+        Equipment busy
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="workout-survey-sheet" class="drawer">
+  <div class="drawer-overlay" data-close-drawer="workout-survey-sheet"></div>
+  <div class="drawer-sheet">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Progression review</span>
+        <h2 class="h2">Weekly check-in</h2>
+      </div>
+      <button class="btn btn-ghost" id="workout-survey-close" type="button">Close</button>
+    </div>
+
+    <div class="field-grid">
+      <label class="field">
+        <span class="field-label">How did last week feel?</span>
+        <select id="survey-feel">
+          <option value="easy">Easier than expected</option>
+          <option value="ok" selected>About right</option>
+          <option value="hard">Hard / missed sets</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span class="field-label">Notes</span>
+        <textarea id="survey-notes" placeholder="What felt difficult, what should change?"></textarea>
+      </label>
+
+      <button id="workout-survey-save" class="btn btn-primary" type="button">Save Review</button>
+    </div>
+  </div>
+</div>
